@@ -84,6 +84,8 @@ coverage/
 # =============================
 # Generated RAG Artifacts
 # =============================
+corpus/
+backend/data/
 backend/embedded_files*.json
 backend/vietlaw_faiss_index*/
 backend/evaluation/dataset.json

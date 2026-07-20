@@ -25,11 +25,9 @@ services:
     env_file:
       - .env
     environment:
-      STORAGE_BACKEND: qdrant_postgres
-      POSTGRES_DSN: ${POSTGRES_DSN:-postgresql://postgres:postgres@postgres:5432/vietlaw}
-      # Set QDRANT_URL/QDRANT_API_KEY in .env for Qdrant Cloud. The local
-      # qdrant service remains available for development only.
-      QDRANT_URL: ${QDRANT_URL:-http://qdrant:6333}
+      STORAGE_BACKEND: ${STORAGE_BACKEND:-faiss}
+      POSTGRES_DSN: ${POSTGRES_DSN:-}
+      QDRANT_URL: ${QDRANT_URL:-}
       QDRANT_COLLECTION: ${QDRANT_COLLECTION:-vietlaw_clauses}
       SEMANTIC_CACHE_COLLECTION: ${SEMANTIC_CACHE_COLLECTION:-semantic_cache}
       HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY:-}
@@ -49,15 +47,11 @@ services:
       RERANKER_FAIL_OPEN: ${RERANKER_FAIL_OPEN:-false}
       DISABLE_AUTO_INGEST: "true"
     volumes:
-      - ./backend/data:/app/data
       - ./backend/vietlaw_faiss_index:/app/vietlaw_faiss_index
       - ./backend/embedded_files.json:/app/embedded_files.json
       - ./models:/models:ro
       # Ánh xạ thư mục cache của HuggingFace ra ngoài để không phải tải lại model
       - hf_cache:/root/.cache/huggingface
-    depends_on:
-      - postgres
-      - qdrant
 
   frontend:
     build: ./frontend
@@ -79,7 +73,7 @@ services:
     env_file:
       - .env
     environment:
-      STORAGE_BACKEND: qdrant_postgres
+      STORAGE_BACKEND: ${STORAGE_BACKEND:-qdrant_postgres}
       # POSTGRES_DSN: postgresql://postgres:postgres@postgres:5432/vietlaw
       # QDRANT_URL: http://qdrant:6333
       POSTGRES_DSN: ${POSTGRES_DSN:-postgresql://postgres:postgres@postgres:5432/vietlaw}
@@ -105,7 +99,6 @@ services:
       RERANKER_FAIL_OPEN: ${RERANKER_FAIL_OPEN:-false}
       DISABLE_AUTO_INGEST: "false"
     volumes:
-      - ./backend/data:/app/data
       - ./backend/vietlaw_faiss_index:/app/vietlaw_faiss_index
       - ./backend/embedded_files.json:/app/embedded_files.json
       - ./models:/models:ro
