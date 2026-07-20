@@ -1,0 +1,30 @@
+# === Core Web Framework ===
+fastapi
+uvicorn
+pydantic
+python-dotenv
+python-multipart
+
+# === LangChain + LLM ===
+langchain>=0.2.0
+langchain-core>=0.2.0
+langchain-community>=0.2.0
+langchain-huggingface>=1.2.0
+langchain-openai>=0.1.0
+langchain-text-splitters>=0.2.0
+
+# === Vector Store ===
+# faiss-cpu # (Ẩn khi deploy Vercel: Chỉ cần nếu dùng FAISS local fallback)
+qdrant-client>=0.11.0
+
+# === Database ===
+psycopg[binary]
+
+# === HuggingFace Hub ===
+huggingface_hub>=0.24.0
+
+# === Local Model Runtime ===
+
+# === Ingestion & Local Tools ===
+# faiss-cpu # (Ẩn khi deploy Vercel: Chỉ cần nếu dùng FAISS local fallback)
+tqdm>=4.66.0

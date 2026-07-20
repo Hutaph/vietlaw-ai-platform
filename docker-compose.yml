@@ -1,0 +1,120 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: vietlaw
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "15432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      STORAGE_BACKEND: qdrant_postgres
+      POSTGRES_DSN: ${POSTGRES_DSN:-postgresql://postgres:postgres@postgres:5432/vietlaw}
+      # Set QDRANT_URL/QDRANT_API_KEY in .env for Qdrant Cloud. The local
+      # qdrant service remains available for development only.
+      QDRANT_URL: ${QDRANT_URL:-http://qdrant:6333}
+      QDRANT_COLLECTION: ${QDRANT_COLLECTION:-vietlaw_clauses}
+      SEMANTIC_CACHE_COLLECTION: ${SEMANTIC_CACHE_COLLECTION:-semantic_cache}
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY:-}
+      HF_TOKEN: ${HUGGINGFACE_API_KEY:-}
+      RUNTIME_PROFILE: ${RUNTIME_PROFILE:-local}
+      EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-huggingface}
+      HUGGINGFACE_EMBEDDING_MODE: ${HUGGINGFACE_EMBEDDING_MODE:-local}
+      HUGGINGFACE_EMBEDDING_MODEL: ${HUGGINGFACE_EMBEDDING_MODEL:-/models/embedding/vietlaw-bge-m3-finetuned/best}
+      EMBEDDING_DEVICE: ${EMBEDDING_DEVICE:-cpu}
+      EMBEDDING_DIMENSION: ${EMBEDDING_DIMENSION:-1024}
+      EMBEDDING_NORMALIZE: ${EMBEDDING_NORMALIZE:-true}
+      LOCAL_MODELS_OFFLINE: ${LOCAL_MODELS_OFFLINE:-true}
+      RERANKER_MODEL: ${RERANKER_MODEL:-/models/reranking/vietlaw-bge-reranker-v2-m3-finetuned/selected}
+      RERANKER_DEVICE: ${RERANKER_DEVICE:-cpu}
+      RERANKER_BATCH_SIZE: ${RERANKER_BATCH_SIZE:-8}
+      RERANKER_MAX_LENGTH: ${RERANKER_MAX_LENGTH:-512}
+      RERANKER_FAIL_OPEN: ${RERANKER_FAIL_OPEN:-false}
+      DISABLE_AUTO_INGEST: "true"
+    volumes:
+      - ./backend/data:/app/data
+      - ./backend/vietlaw_faiss_index:/app/vietlaw_faiss_index
+      - ./backend/embedded_files.json:/app/embedded_files.json
+      - ./models:/models:ro
+      # Ánh xạ thư mục cache của HuggingFace ra ngoài để không phải tải lại model
+      - hf_cache:/root/.cache/huggingface
+    depends_on:
+      - postgres
+      - qdrant
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      BACKEND_URL: http://backend:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+
+  ingest:
+    build: ./backend
+    command: python scripts/ingest_to_storage.py
+    profiles: ["tools"]
+    env_file:
+      - .env
+    environment:
+      STORAGE_BACKEND: qdrant_postgres
+      # POSTGRES_DSN: postgresql://postgres:postgres@postgres:5432/vietlaw
+      # QDRANT_URL: http://qdrant:6333
+      POSTGRES_DSN: ${POSTGRES_DSN:-postgresql://postgres:postgres@postgres:5432/vietlaw}
+      # Set QDRANT_URL/QDRANT_API_KEY in .env for Qdrant Cloud. The local
+      # qdrant service remains available for development only.
+      QDRANT_URL: ${QDRANT_URL:-http://qdrant:6333}
+      QDRANT_COLLECTION: ${QDRANT_COLLECTION:-vietlaw_clauses}
+      SEMANTIC_CACHE_COLLECTION: ${SEMANTIC_CACHE_COLLECTION:-semantic_cache}
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY:-}
+      HF_TOKEN: ${HUGGINGFACE_API_KEY:-}
+      RUNTIME_PROFILE: ${RUNTIME_PROFILE:-local}
+      EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-huggingface}
+      HUGGINGFACE_EMBEDDING_MODE: ${HUGGINGFACE_EMBEDDING_MODE:-local}
+      HUGGINGFACE_EMBEDDING_MODEL: ${HUGGINGFACE_EMBEDDING_MODEL:-/models/embedding/vietlaw-bge-m3-finetuned/best}
+      EMBEDDING_DEVICE: ${EMBEDDING_DEVICE:-cpu}
+      EMBEDDING_DIMENSION: ${EMBEDDING_DIMENSION:-1024}
+      EMBEDDING_NORMALIZE: ${EMBEDDING_NORMALIZE:-true}
+      LOCAL_MODELS_OFFLINE: ${LOCAL_MODELS_OFFLINE:-true}
+      RERANKER_MODEL: ${RERANKER_MODEL:-/models/reranking/vietlaw-bge-reranker-v2-m3-finetuned/selected}
+      RERANKER_DEVICE: ${RERANKER_DEVICE:-cpu}
+      RERANKER_BATCH_SIZE: ${RERANKER_BATCH_SIZE:-8}
+      RERANKER_MAX_LENGTH: ${RERANKER_MAX_LENGTH:-512}
+      RERANKER_FAIL_OPEN: ${RERANKER_FAIL_OPEN:-false}
+      DISABLE_AUTO_INGEST: "false"
+    volumes:
+      - ./backend/data:/app/data
+      - ./backend/vietlaw_faiss_index:/app/vietlaw_faiss_index
+      - ./backend/embedded_files.json:/app/embedded_files.json
+      - ./models:/models:ro
+      - hf_cache:/root/.cache/huggingface
+    depends_on:
+      - postgres
+      - qdrant
+
+volumes:
+  postgres_data:
+  qdrant_data:
+  hf_cache:

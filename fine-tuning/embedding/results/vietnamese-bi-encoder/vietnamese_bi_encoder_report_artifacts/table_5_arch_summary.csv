@@ -1,0 +1,11 @@
+﻿Thuộc tính,Giá trị
+Model name,bkai-foundation-models/vietnamese-bi-encoder
+Model type,roberta
+Max sequence length,256
+Hidden size,768
+Hidden layers,12
+Attention heads,12
+Activation,gelu
+Vocabulary size,64001
+Total parameters,"134,998,272"
+Trainable parameters,"134,998,272"

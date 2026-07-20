@@ -1,0 +1,11 @@
+﻿Thuộc tính,Giá trị
+Model name,BAAI/bge-m3
+Model type,xlm-roberta
+Max sequence length,512
+Hidden size,1024
+Hidden layers,24
+Attention heads,16
+Activation,gelu
+Vocabulary size,250002
+Total parameters,"567,754,752"
+Trainable parameters,"567,754,752"

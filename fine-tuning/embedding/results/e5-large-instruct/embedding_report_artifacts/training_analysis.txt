@@ -1,0 +1,4 @@
+Train loss giảm so với ban đầu, cho thấy mô hình có học được tín hiệu từ dữ liệu.
+Validation loss không tăng so với ban đầu, chưa thấy dấu hiệu overfitting rõ rệt.
+Validation MRR@10 giảm; cần kiểm tra overfitting hoặc negative sampling quá nhiễu.
+Early stopping theo validation MRR@10: best_val_mrr=0.9852, patience=3, threshold=0.0005.

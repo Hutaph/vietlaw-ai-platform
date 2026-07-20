@@ -1,0 +1,161 @@
+@import "tailwindcss";
+@custom-variant dark (&:is(.dark *));
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ============================================
+   DESIGN TOKENS & BASE
+   ============================================ */
+:root {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --color-primary: #2563EB;
+  --color-primary-glow: rgba(37, 99, 235, 0.3);
+}
+
+html, body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  @apply transition-colors duration-300;
+}
+
+/* ============================================
+   CUSTOM SCROLLBAR
+   ============================================ */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.4);
+  border-radius: 20px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(59, 130, 246, 0.5);
+}
+
+/* ============================================
+   SKELETON SHIMMER
+   ============================================ */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(226,232,240,0.8) 25%,
+    rgba(241,245,249,0.9) 50%,
+    rgba(226,232,240,0.8) 75%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* ============================================
+   TYPING CURSOR
+   ============================================ */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.typing-cursor::after {
+  content: '▊';
+  font-size: 0.9em;
+  animation: blink 0.75s step-start infinite;
+  color: var(--color-primary);
+  margin-left: 2px;
+}
+
+/* ============================================
+   GLOW INPUT FOCUS
+   ============================================ */
+.input-glow:focus-within {
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.12),
+    0 0 24px rgba(37, 99, 235, 0.08),
+    0 4px 32px rgba(0, 0, 0, 0.07);
+}
+
+/* ============================================
+   PROMPT STARTER FLOAT-UP
+   ============================================ */
+@keyframes float-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+.prompt-starter                  { animation: float-up 0.45s ease-out both; }
+.prompt-starter:nth-child(1)     { animation-delay: 0.05s; }
+.prompt-starter:nth-child(2)     { animation-delay: 0.12s; }
+.prompt-starter:nth-child(3)     { animation-delay: 0.19s; }
+.prompt-starter:nth-child(4)     { animation-delay: 0.26s; }
+.prompt-starter:nth-child(5)     { animation-delay: 0.33s; }
+.prompt-starter:nth-child(6)     { animation-delay: 0.40s; }
+
+/* ============================================
+   MESSAGE SLIDE-IN
+   ============================================ */
+@keyframes message-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+.message-animate {
+  animation: message-in 0.28s ease-out both;
+}
+
+/* ============================================
+   SEND BUTTON GLOW ON HOVER
+   ============================================ */
+.send-btn-ready:hover {
+  box-shadow: 0 0 0 4px var(--color-primary-glow);
+}
+
+/* ============================================
+   SIDEBAR ACTIVE ITEM
+   ============================================ */
+.sidebar-item-active {
+  background: linear-gradient(90deg, rgba(59,130,246,0.18), rgba(37,99,235,0.08));
+  border-left: 2px solid #3B82F6;
+}
+
+/* ============================================
+   QUICK ACTION BUTTONS
+   ============================================ */
+.quick-action-btn {
+  transition: all 0.15s ease;
+}
+.quick-action-btn:hover {
+  background-color: rgba(59,130,246,0.08);
+  color: #2563EB;
+}
+
+/* ============================================
+   TYPING CURSOR (streaming)
+   ============================================ */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.typing-cursor::after {
+  content: '▋';
+  display: inline-block;
+  margin-left: 2px;
+  color: #2563EB;
+  animation: blink 0.8s step-start infinite;
+  font-size: 0.85em;
+  vertical-align: baseline;
+}
+
+/* ============================================
+   SEND BUTTON GLOW (when active)
+   ============================================ */
+.send-btn-ready {
+  box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+  animation: send-pulse 2s ease-in-out infinite;
+}
+
+@keyframes send-pulse {
+  0%, 100% { box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+  50% { box-shadow: 0 4px 20px rgba(37,99,235,0.55); }
+}
+

@@ -1,0 +1,6 @@
+# Local fine-tuned embedding and reranking runtime.
+# Install after requirements.txt for native/Docker local-model execution.
+torch>=2.1.0
+transformers>=4.40.0
+sentence-transformers>=3.0.0
+safetensors>=0.4.0

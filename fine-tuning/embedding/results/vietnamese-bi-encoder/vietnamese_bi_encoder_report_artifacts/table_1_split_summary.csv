@@ -1,0 +1,4 @@
+﻿Split,Samples,Ratio,Vai trò
+Train,26446,0.7,Huấn luyện mô hình
+Validation,5667,0.15,"Theo dõi learning curve, early stopping, chọn checkpoint"
+Test,5667,0.15,Đánh giá cuối cùng

@@ -1,0 +1,4 @@
+﻿Tập dữ liệu,Số mẫu,Tỷ lệ dự kiến,Vai trò
+Train,26446,70%,Huấn luyện mô hình
+Validation,5667,15%,Theo dõi learning curves và chọn checkpoint
+Test,5668,15%,Đánh giá cuối cùng

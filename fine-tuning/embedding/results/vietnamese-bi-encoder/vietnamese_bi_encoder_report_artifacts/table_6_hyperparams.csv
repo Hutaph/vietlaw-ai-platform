@@ -1,0 +1,22 @@
+﻿Hyperparameter,Value
+Model,bkai-foundation-models/vietnamese-bi-encoder
+Loss,MultipleNegativesRankingLoss
+Optimizer,AdamW
+Learning rate,2e-05
+Weight decay,0.01
+Batch size,4
+Epochs,2
+Warmup ratio,0.1
+Warmup steps,330
+Gradient accumulation steps,4
+Max sequence length,256
+AMP/fp16,True
+Training negative strategy,In-batch negatives
+Validation/Test negative strategy,TF-IDF hard negatives
+Eval negatives per query,31
+Eval TF-IDF top-k pool,100
+LOG_EVALS_PER_EPOCH,4
+SYNC_EVAL_STEPS,413
+Early stopping patience,3
+Early stopping threshold,0.0005
+Tuning method,Thử nghiệm thủ công theo giới hạn GPU

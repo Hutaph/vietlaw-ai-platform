@@ -1,0 +1,9 @@
+﻿Thuộc tính,Giá trị
+Model,namdp-ptit/ViRanker
+Kiểu mô hình,Transformer encoder cross-encoder reranker
+Số hidden layers,24
+Hidden size,1024
+Số attention heads,16
+Activation trong config,gelu
+Tổng số tham số,"567,755,777"
+Số tham số trainable,"567,755,777"

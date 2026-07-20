@@ -1,0 +1,22 @@
+﻿Hyperparameter,Value
+Model,BAAI/bge-m3
+Loss,MultipleNegativesRankingLoss
+Optimizer,AdamW
+Learning rate,2e-05
+Weight decay,0.01
+Batch size,32
+Epochs,2
+Warmup ratio,0.1
+Warmup steps,165
+Gradient accumulation steps,1
+Max sequence length,512
+AMP/fp16,True
+Training negative strategy,In-batch negatives
+Validation/Test negative strategy,TF-IDF hard negatives
+Eval negatives per query,31
+Eval TF-IDF top-k pool,100
+LOG_EVALS_PER_EPOCH,4
+SYNC_EVAL_STEPS,206
+Early stopping patience,2
+Early stopping threshold,0.0005
+Tuning method,Thử nghiệm thủ công theo giới hạn GPU

@@ -1,0 +1,36 @@
+CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
+Độc lập - Tự do - Hạnh phúc
+-------------------------
+
+LUẬT GIẢ ĐỊNH VỀ TRÍ TUỆ NHÂN TẠO TRONG LĨNH VỰC PHÁP LÝ (BẢN NHÁP)
+
+Chương I: QUY ĐỊNH CHUNG
+
+Điều 1. Phạm vi điều chỉnh
+Luật này quy định về việc phát triển, triển khai và sử dụng Trí tuệ Nhân tạo (AI) trong các hoạt động liên quan đến tra cứu, tư vấn và hỗ trợ pháp lý tại Việt Nam.
+
+Điều 2. Đối tượng áp dụng
+Luật này áp dụng đối với các cơ quan, tổ chức, cá nhân tham gia nghiên cứu, phát triển, cung cấp dịch vụ và sử dụng hệ thống AI pháp lý trên lãnh thổ Việt Nam.
+
+Điều 3. Nguyên tắc phát triển và sử dụng AI pháp lý
+1. Bảo đảm tính minh bạch, rõ ràng trong các luồng suy luận của AI.
+2. Tôn trọng và bảo vệ quyền riêng tư, dữ liệu cá nhân của người dùng.
+3. Chịu sự giám sát của con người. Mọi quyết định pháp lý cuối cùng phải do con người (chuyên gia pháp lý, luật sư, thẩm phán) đưa ra.
+
+Chương II: TRÁCH NHIỆM CỦA ĐƠN VỊ CUNG CẤP DỊCH VỤ
+
+Điều 4. Yêu cầu về độ chính xác
+1. Các hệ thống AI pháp lý phải sử dụng nguồn dữ liệu pháp luật chính thống, được cập nhật thường xuyên từ cơ sở dữ liệu quốc gia về pháp luật.
+2. Đơn vị cung cấp phải có cơ chế cảnh báo người dùng về giới hạn của AI (hallucination) và khuyến nghị tham khảo ý kiến luật sư.
+
+Điều 5. Lưu trữ và xử lý dữ liệu
+1. Dữ liệu hội thoại giữa người dùng và AI phải được mã hóa và bảo mật.
+2. Không được sử dụng dữ liệu hội thoại chứa thông tin cá nhân nhạy cảm để huấn luyện mô hình nếu không có sự đồng ý rõ ràng bằng văn bản của người dùng.
+
+Chương III: ĐIỀU KHOẢN THI HÀNH
+
+Điều 6. Hiệu lực thi hành
+Luật này có hiệu lực kể từ ngày 01 tháng 01 năm 2030.
+
+Điều 7. Trách nhiệm thi hành
+Bộ Tư pháp phối hợp với Bộ Thông tin và Truyền thông chịu trách nhiệm hướng dẫn thi hành Luật này.

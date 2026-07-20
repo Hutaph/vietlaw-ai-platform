@@ -1,0 +1,23 @@
+{
+  "env": {
+    "RUNTIME_PROFILE": "serverless",
+    "CHAT_STORAGE_MODE": "browser",
+    "NEXT_PUBLIC_CHAT_STORAGE_MODE": "browser",
+    "HUGGINGFACE_EMBEDDING_MODE": "api",
+    "HUGGINGFACE_EMBEDDING_MODEL": "BAAI/bge-m3",
+    "PIPELINE_RERANKING": "embedding_similarity",
+    "LOCAL_MODELS_PRELOAD_ENABLED": "false",
+    "LOCAL_MODELS_WARMUP_ENABLED": "false"
+  },
+  "experimentalServices": {
+    "frontend": {
+      "entrypoint": "frontend",
+      "routePrefix": "/",
+      "framework": "nextjs"
+    },
+    "backend": {
+      "entrypoint": "backend",
+      "routePrefix": "/_/backend"
+    }
+  }
+}

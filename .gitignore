@@ -1,0 +1,99 @@
+# =============================
+# Environment Variables
+# =============================
+.env
+.env.*
+!.env.example
+
+# =============================
+# Node.js / Next.js
+# =============================
+node_modules/
+.next/
+out/
+dist/
+build/
+
+# =============================
+# Python
+# =============================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+venv/
+.venv/
+ENV/
+
+# =============================
+# IDE / Editor
+# =============================
+.vscode/
+.idea/
+*.swp
+*.swo
+*.suo
+*.sw?
+*~
+
+# =============================
+# OS Files
+# =============================
+.DS_Store
+Thumbs.db
+
+# =============================
+# Logs
+# =============================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# =============================
+# Testing / Coverage
+# =============================
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+coverage/
+.nyc_output/
+
+# =============================
+# Cache / Temp
+# =============================
+.cache/
+.parcel-cache/
+.tmp/
+
+# =============================
+# Misc
+# =============================
+*.pem
+*.tgz
+*.zip
+*.gz
+*.rar
+
+# =============================
+# Generated RAG Artifacts
+# =============================
+backend/embedded_files*.json
+backend/vietlaw_faiss_index*/
+backend/evaluation/dataset.json
+backend/evaluation/results.csv
+backend/data/chat_logs.json
+fine-tuning/data/local/
+reports/index_migrations/
+
+# =============================
+# Local Fine-tuned Models
+# =============================
+/models/
+/checkpoint/
