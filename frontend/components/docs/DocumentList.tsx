@@ -6,7 +6,7 @@ import { FileText, ChevronRight, Trash2, Scale } from 'lucide-react';
 interface Document {
   id: string;
   name: string;
-  summary: string;
+  summary?: string;
   category: string;
   metadata?: {
     category?: string;
@@ -30,12 +30,12 @@ export default function DocumentList({ documents: propDocuments, selectedId, onS
       try {
         const res = await fetch('/api/documents');
         if (!res.ok) {
-          throw new Error(`Failed to fetch documents: ${res.statusText}`);
+          throw new Error(`Không thể tải danh sách tài liệu: ${res.statusText}`);
         }
         const data = await res.json();
         setFetchedDocuments(data.documents || []);
       } catch (error) {
-        console.error('Error fetching docs:', error);
+        console.error('Không thể tải danh sách tài liệu:', error);
       } finally {
         setLoading(false);
       }
@@ -64,8 +64,6 @@ export default function DocumentList({ documents: propDocuments, selectedId, onS
         if (!propDocuments) {
           setFetchedDocuments(fetchedDocuments.filter(doc => doc.id !== id));
         } else {
-          // If using propDocuments, the parent should refetch, but we can't easily trigger it here.
-          // Better to use window reload or a callback in a real app.
           window.location.reload();
         }
       } else {
@@ -146,13 +144,21 @@ export default function DocumentList({ documents: propDocuments, selectedId, onS
           </h3>
           
           <p className="text-[12px] text-gray-500 dark:text-gray-400 flex-1 line-clamp-3 mb-4">
-            {doc.summary || 'Không có bản tóm tắt.'}
+            {doc.id}
           </p>
           
-          <div className="mt-auto pt-4 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between text-indigo-600 dark:text-indigo-400 group">
-            <span className="text-[12px] font-medium">Xem chi tiết chunk</span>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              if (onSelectDoc) onSelectDoc(doc);
+              if (onSelect) onSelect(doc.id);
+            }}
+            className="mt-auto pt-4 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between text-indigo-600 dark:text-indigo-400 text-left"
+          >
+            <span className="text-[12px] font-medium">Xem các đoạn dữ liệu</span>
             <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-          </div>
+          </button>
         </div>
       ))}
     </div>
