@@ -109,7 +109,7 @@ export default function UploadModal({ onClose, onSuccess }: UploadModalProps) {
               <div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Tải lên thành công!</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Tài liệu đã được phân tách thành <span className="font-bold text-emerald-600 dark:text-emerald-400">{chunksCount}</span> chunks và đưa vào cơ sở dữ liệu vector.
+                  Tài liệu đã được phân tách thành <span className="font-bold text-emerald-600 dark:text-emerald-400">{chunksCount}</span> đoạn dữ liệu và đưa vào kho truy xuất.
                 </p>
               </div>
             </div>
@@ -144,7 +144,7 @@ export default function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                   <div className="flex flex-col items-center w-full">
                     <div className="flex items-center gap-2 mb-3">
                       <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                      <span className="font-medium text-gray-900 dark:text-white">Đã chọn {selectedFiles.length} file</span>
+                      <span className="font-medium text-gray-900 dark:text-white">Đã chọn {selectedFiles.length} tệp</span>
                     </div>
                     
                     <div className="max-h-32 overflow-y-auto w-full custom-scrollbar space-y-2 mb-4">
@@ -169,7 +169,7 @@ export default function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                         onClick={() => fileInputRef.current?.click()}
                         className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
                       >
-                        Thêm file
+                        Thêm tệp
                       </button>
                       <button 
                         onClick={() => setSelectedFiles([])}
@@ -185,10 +185,10 @@ export default function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                       <UploadCloud className="w-6 h-6 text-gray-500 dark:text-gray-400" />
                     </div>
                     <span className="text-sm font-medium text-gray-900 dark:text-white mb-1">
-                      Kéo thả file vào đây hoặc <span className="text-blue-600 dark:text-blue-400">chọn file</span>
+                      Kéo thả tệp vào đây hoặc <span className="text-blue-600 dark:text-blue-400">chọn tệp</span>
                     </span>
                     <span className="text-xs text-gray-500">
-                      Chỉ hỗ trợ file văn bản (.txt)
+                      Chỉ hỗ trợ tệp văn bản (.txt)
                     </span>
                   </div>
                 )}
@@ -232,7 +232,7 @@ export default function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                     Đang xử lý...
                   </>
                 ) : (
-                  'Tải lên & Xử lý'
+                  'Tải lên và xử lý'
                 )}
               </button>
             </>
