@@ -47,7 +47,6 @@ export type InferenceRoleId = 'answer' | 'rewriter' | 'summarizer';
 export interface InferenceProvider {
   id: InferenceProviderId;
   name: string;
-  requiresApiKey: boolean;
   deploymentSupported: boolean;
 }
 
@@ -56,12 +55,6 @@ export interface InferenceRoleSetting {
   model: string;
 }
 
-export interface ProviderCredentialSetting {
-  apiKey: string;
-  remember: boolean;
-}
-
-export type ProviderCredentialSettings = Partial<Record<InferenceProviderId, ProviderCredentialSetting>>;
 export type InferenceRoleSettings = Record<InferenceRoleId, InferenceRoleSetting>;
 
 // --- API ---
@@ -86,7 +79,6 @@ export interface ChatApiRequest {
   enableSemanticCache?: boolean;
   enableMemory?: boolean;
   inferenceConfig?: {
-    credentials?: Partial<Record<InferenceProviderId, { apiKey?: string }>>;
     roles?: Partial<Record<InferenceRoleId, InferenceRoleSetting>>;
     useServerFallbacks?: boolean;
   };
