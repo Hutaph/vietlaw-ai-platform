@@ -16,6 +16,14 @@ import { AI_MODELS, AI_PROVIDERS } from '@/lib/constants';
 import { AISettings, DEFAULT_AI_SETTINGS, setRoleByModel } from '@/lib/ai-settings';
 import { useAISettings } from '@/hooks/use-ai-settings';
 
+const ROLE_LABELS = {
+  answer: 'Trả lời chính',
+  rewriter: 'Viết lại câu hỏi',
+  summarizer: 'Tóm tắt bộ nhớ',
+} as const;
+
+const SERVER_AI_MODELS = AI_MODELS.filter(model => model.provider !== 'ollama');
+
 const SYSTEM_FEATURES = [
   {
     icon: Search,
@@ -134,22 +142,22 @@ export default function SystemSettingsTab() {
         <div className="space-y-6">
           <section className="rounded-2xl border border-gray-200 dark:border-slate-800 p-5">
             <div className="mb-4">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white">Inference roles</h3>
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white">Vai trò mô hình</h3>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Answer generation, query rewriting, and memory summarization can use separate provider models. Legal retrieval is managed by the server.
+                Chọn mô hình cho từng bước sinh câu trả lời. Khóa API và truy xuất pháp lý được xử lý ở backend.
               </p>
             </div>
             <div className="space-y-3">
               {(['answer', 'rewriter', 'summarizer'] as const).map(role => (
                 <div key={role} className="grid gap-2 md:grid-cols-[170px_1fr] md:items-center">
-                  <span className="text-sm font-semibold capitalize text-gray-700 dark:text-gray-300">{role}</span>
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{ROLE_LABELS[role]}</span>
                   <select
                     value={draft.roles[role].model}
                     onChange={event => updateRoleModel(role, event.target.value)}
                     disabled={draft.useSameModelForHelperRoles && role !== 'answer'}
                     className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-indigo-500 disabled:opacity-60"
                   >
-                    {AI_MODELS.filter(model => model.provider !== 'ollama').map(model => (
+                    {SERVER_AI_MODELS.map(model => (
                       <option key={`${role}-${model.id}`} value={model.id}>
                         {model.fullName} - {AI_PROVIDERS.find(provider => provider.id === model.provider)?.name}
                       </option>
@@ -179,18 +187,20 @@ export default function SystemSettingsTab() {
                     setSaved(false);
                   }}
                 />
-                Use answer model for rewriter and memory summarizer
+                Dùng cùng mô hình trả lời cho bước viết lại câu hỏi và tóm tắt bộ nhớ
               </label>
             </div>
           </section>
 
           <section className="rounded-2xl border border-gray-200 dark:border-slate-800 p-5">
             <div className="mb-4">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white">Mô hình trả lời mặc định</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Backend sẽ dùng chiến lược API/local fallback đã cấu hình trên server.</p>
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white">Chọn nhanh mô hình trả lời</h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Các lựa chọn này chỉ đổi mô hình cho vai trò trả lời chính; thông tin xác thực vẫn nằm trên server.
+              </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {AI_MODELS.map(model => (
+              {SERVER_AI_MODELS.map(model => (
                 <button
                   key={model.id}
                   type="button"
