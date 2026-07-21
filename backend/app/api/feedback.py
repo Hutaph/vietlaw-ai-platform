@@ -3,8 +3,8 @@ from typing import Any, Dict, Optional
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from app.services.storage import is_database_backend_enabled, _ensure_schema
-from app.config import CHAT_STORAGE_MODE, POSTGRES_DSN
+from app.services.storage import is_database_backend_enabled, _ensure_schema, _connect_postgres
+from app.config import CHAT_STORAGE_MODE
 from app.utils.logging import setup_logger
 
 logger = setup_logger("vietlaw.api.feedback")
@@ -46,7 +46,7 @@ async def submit_feedback(request: FeedbackRequest):
         # Ensure schema exists (in case it wasn't initialized)
         _ensure_schema()
         
-        with psycopg.connect(POSTGRES_DSN, autocommit=True) as conn:
+        with _connect_postgres(autocommit=True) as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     """

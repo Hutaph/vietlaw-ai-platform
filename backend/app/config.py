@@ -27,6 +27,21 @@ FAISS_INDEX_PATH = os.getenv(
     str(_backend_dir / f"vietlaw_faiss_index{_embedding_artifact_suffix}"),
 )
 JSON_DATA_PATH = str(_backend_dir / "data" / "processed")
+_corpus_jsonl_env = os.getenv("CORPUS_JSONL_PATH")
+if _corpus_jsonl_env:
+    _corpus_jsonl_path = Path(_corpus_jsonl_env)
+    CORPUS_JSONL_PATH = str(
+        _corpus_jsonl_path
+        if _corpus_jsonl_path.is_absolute()
+        else _backend_dir.parent / _corpus_jsonl_path
+    )
+else:
+    CORPUS_JSONL_PATH = str(_backend_dir.parent / "corpus" / "processed" / "legal-corpus.jsonl")
+CORPUS_EMBED_LEVELS = {
+    level.strip().lower()
+    for level in os.getenv("CORPUS_EMBED_LEVELS", "article,clause,point").split(",")
+    if level.strip()
+}
 TRACKING_FILE = os.getenv(
     "EMBEDDED_FILES_PATH",
     str(_backend_dir / f"embedded_files{_embedding_artifact_suffix}.json"),
@@ -57,6 +72,9 @@ POSTGRES_DSN = os.getenv("POSTGRES_DSN", "postgresql://postgres:postgres@localho
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY", "")
 QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION", "vietlaw_clauses")
+QDRANT_TIMEOUT = float(os.getenv("QDRANT_TIMEOUT", "120"))
+QDRANT_MAX_RETRIES = int(os.getenv("QDRANT_MAX_RETRIES", "5"))
+QDRANT_UPSERT_BATCH_SIZE = int(os.getenv("QDRANT_UPSERT_BATCH_SIZE", "64"))
 DISABLE_AUTO_INGEST = os.getenv("DISABLE_AUTO_INGEST", "false").strip().lower() == "true"
 ENABLE_FAISS_FALLBACK = os.getenv("ENABLE_FAISS_FALLBACK", "false").strip().lower() == "true"
 PIPELINE_TIMING_ENABLED = os.getenv("PIPELINE_TIMING_ENABLED", "false").strip().lower() == "true"
@@ -251,6 +269,8 @@ def _validate_non_empty(name: str, value: str) -> None:
 
 _validate_positive_int("EMBEDDING_BATCH_SIZE", EMBEDDING_BATCH_SIZE)
 _validate_positive_int("EMBEDDING_DIMENSION", EMBEDDING_DIMENSION)
+_validate_positive_int("QDRANT_MAX_RETRIES", QDRANT_MAX_RETRIES)
+_validate_positive_int("QDRANT_UPSERT_BATCH_SIZE", QDRANT_UPSERT_BATCH_SIZE)
 _validate_positive_int("RERANKER_BATCH_SIZE", PIPELINE_CONFIG["reranker_batch_size"])
 _validate_positive_int("RERANKER_MAX_LENGTH", PIPELINE_CONFIG["reranker_max_length"])
 _validate_non_empty("QDRANT_COLLECTION", QDRANT_COLLECTION)

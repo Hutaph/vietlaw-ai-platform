@@ -121,6 +121,7 @@ def _check_postgres() -> dict:
     connect_kwargs = {}
     if psycopg.__name__ == "psycopg":
         connect_kwargs["connect_timeout"] = 3
+        connect_kwargs["prepare_threshold"] = None
 
     conn = psycopg.connect(POSTGRES_DSN, **connect_kwargs)
     try:

@@ -182,12 +182,13 @@ async def delete_document(law_id: str):
     try:
         if STORAGE_BACKEND.lower() in {"qdrant_postgres", "postgres", "postgresql", "qdrant"}:
             import psycopg
-            from app.config import POSTGRES_DSN, QDRANT_URL, QDRANT_API_KEY, QDRANT_COLLECTION
+            from app.config import QDRANT_URL, QDRANT_API_KEY, QDRANT_COLLECTION
+            from app.services.storage import _connect_postgres
             from qdrant_client import QdrantClient
             from qdrant_client.http import models
             
             # Delete from Postgres
-            with psycopg.connect(POSTGRES_DSN, autocommit=True) as conn:
+            with _connect_postgres(autocommit=True) as conn:
                 with conn.cursor() as cursor:
                     cursor.execute("DELETE FROM laws WHERE law_id = %s", (law_id,))
                     

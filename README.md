@@ -3,23 +3,14 @@
 Chatbot tra cứu pháp luật Việt Nam sử dụng kỹ thuật **RAG (Retrieval-Augmented Generation)**.
 Hệ thống tách dữ liệu pháp luật thành các điều khoản, lập chỉ mục dense/sparse trong Qdrant, truy xuất các căn cứ liên quan và dùng Gemini hoặc provider từ xa được cấu hình để sinh câu trả lời tiếng Việt có citation.
 
-> **Lưu ý pháp lý:** Đây là hệ thống phục vụ nghiên cứu/đồ án sinh viên, không phải dịch vụ tư vấn pháp lý chuyên nghiệp. Người dùng cần kiểm tra lại văn bản pháp luật chính thức hoặc hỏi chuyên gia trước khi ra quyết định.
+> **Lưu ý pháp lý:** Đây là hệ thống phục vụ nghiên cứu và đồ án cá nhân, không phải dịch vụ tư vấn pháp lý chuyên nghiệp. Người dùng cần kiểm tra lại văn bản pháp luật chính thức hoặc hỏi chuyên gia trước khi ra quyết định.
 
 Luồng triển khai chính dùng **PostgreSQL + Qdrant**. FAISS vẫn được hỗ trợ cho chạy local hoặc fallback legacy khi được bật tường minh, nhưng quality runtime mặc định không tự fallback sang index cũ.
 
 ![Sơ đồ pipeline RAG của VietLaw AI](overview.png)
 
-> **Project môn học:** Introduction to Machine Learning
-
-## Danh sách thành viên
-
-| Mã số sinh viên | Họ tên |
-|---|---|
-| 23120283 | Phạm Quốc Khánh |
-| 23120301 | Phạm Thành Nam |
-| 23120318 | Trương Quang Phát |
-| 23120329 | Châu Huỳnh Phúc (Trưởng nhóm) |
-| 23120334 | Huỳnh Tấn Phước |
+> **Đồ án cá nhân:** VietLaw AI Platform
+> **Tác giả:** Huỳnh Tấn Phước
 
 ---
 
@@ -793,7 +784,7 @@ cd backend
 - Bộ phát hiện tham chiếu không được hỗ trợ chỉ phục vụ mục đích diagnostic; số finding không đồng nghĩa với số lần hallucination.
 - Các token SSE có thể được gửi trước bước kiểm tra citation cuối cùng; câu trả lời tổng hợp, sự kiện hoàn tất, dữ liệu đã lưu và lịch sử hội thoại đều dùng bản đã được làm sạch.
 - Quá trình embedding và reranking chạy cục bộ trên CPU chậm hơn so với GPU.
-- Đây là hệ thống nghiên cứu/đồ án sinh viên và không thay thế tư vấn pháp lý chuyên nghiệp.
+- Đây là hệ thống nghiên cứu/đồ án cá nhân và không thay thế tư vấn pháp lý chuyên nghiệp.
 ## Chat history storage modes
 
 Chat history storage is configured separately from `STORAGE_BACKEND`.

@@ -14,12 +14,38 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from app.config import JSON_DATA_PATH
+from app.config import CORPUS_JSONL_PATH, JSON_DATA_PATH
 
 
 def _load_json_corpus(json_data_path: str | Path) -> dict[str, dict[str, Any]]:
     clauses: dict[str, dict[str, Any]] = {}
-    for file_path in Path(json_data_path).glob("*.json"):
+    path = Path(json_data_path)
+    if path.is_file() and path.suffix == ".jsonl":
+        corpus_files = [path]
+    elif Path(CORPUS_JSONL_PATH).exists():
+        corpus_files = [Path(CORPUS_JSONL_PATH)]
+    else:
+        corpus_files = list(path.glob("*.json"))
+
+    for file_path in corpus_files:
+        if file_path.suffix == ".jsonl":
+            with file_path.open("r", encoding="utf-8") as handle:
+                for line in handle:
+                    if not line.strip():
+                        continue
+                    record = json.loads(line)
+                    source_id = record.get("node_id")
+                    if not source_id:
+                        continue
+                    clauses[source_id] = {
+                        "law_id": record.get("law_id"),
+                        "law_name": record.get("citation_label") or record.get("law_id"),
+                        "position": record.get("hierarchy", {}),
+                        "content": record.get("text", ""),
+                        "file": str(file_path),
+                    }
+            continue
+
         with file_path.open("r", encoding="utf-8") as handle:
             data = json.load(handle)
         law = data.get("law_info", {})
