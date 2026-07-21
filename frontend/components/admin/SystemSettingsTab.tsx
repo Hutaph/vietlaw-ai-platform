@@ -58,34 +58,6 @@ export default function SystemSettingsTab() {
     setSaved(false);
   };
 
-  const updateProviderKey = (provider: 'google' | 'huggingface', apiKey: string) => {
-    setDraft(current => ({
-      ...current,
-      providerCredentials: {
-        ...current.providerCredentials,
-        [provider]: {
-          apiKey,
-          remember: current.providerCredentials[provider]?.remember ?? true,
-        },
-      },
-    }));
-    setSaved(false);
-  };
-
-  const updateProviderRemember = (provider: 'google' | 'huggingface', remember: boolean) => {
-    setDraft(current => ({
-      ...current,
-      providerCredentials: {
-        ...current.providerCredentials,
-        [provider]: {
-          apiKey: current.providerCredentials[provider]?.apiKey ?? '',
-          remember,
-        },
-      },
-    }));
-    setSaved(false);
-  };
-
   const updateRoleModel = (role: 'answer' | 'rewriter' | 'summarizer', modelId: string) => {
     setDraft(current => setRoleByModel(current, role, modelId));
     setSaved(false);
@@ -99,7 +71,7 @@ export default function SystemSettingsTab() {
 
   const handleReset = () => {
     const confirmed = window.confirm(
-      'Restore default AI configuration? This will clear provider API keys and reset model selections on this browser.',
+      'Restore default AI configuration? This will reset model selections and generation settings on this browser.',
     );
     if (!confirmed) return;
 
@@ -160,37 +132,6 @@ export default function SystemSettingsTab() {
 
       {section === 'basic' ? (
         <div className="space-y-6">
-          <section className="rounded-2xl border border-gray-200 dark:border-slate-800 p-5">
-            <div className="mb-4">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white">Provider credentials</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                API keys are stored in this browser and sent only with inference requests.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {AI_PROVIDERS.filter(provider => provider.requiresApiKey).map(provider => (
-                <div key={provider.id} className="rounded-xl border border-gray-200 dark:border-slate-700 p-4">
-                  <label className="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">{provider.name}</label>
-                  <input
-                    type="password"
-                    value={draft.providerCredentials[provider.id]?.apiKey ?? ''}
-                    onChange={event => updateProviderKey(provider.id as 'google' | 'huggingface', event.target.value)}
-                    className="mt-2 w-full rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-indigo-500"
-                    placeholder="API key"
-                  />
-                  <label className="mt-3 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                    <input
-                      type="checkbox"
-                      checked={draft.providerCredentials[provider.id]?.remember ?? true}
-                      onChange={event => updateProviderRemember(provider.id as 'google' | 'huggingface', event.target.checked)}
-                    />
-                    Remember on this device
-                  </label>
-                </div>
-              ))}
-            </div>
-          </section>
-
           <section className="rounded-2xl border border-gray-200 dark:border-slate-800 p-5">
             <div className="mb-4">
               <h3 className="text-sm font-bold text-gray-900 dark:text-white">Inference roles</h3>

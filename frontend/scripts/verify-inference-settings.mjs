@@ -2,17 +2,13 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const aiSettings = readFileSync(resolve(process.cwd(), 'lib/ai-settings.ts'), 'utf8');
-const setupModal = readFileSync(resolve(process.cwd(), 'components/chat/InferenceSetupModal.tsx'), 'utf8');
 const chatInterface = readFileSync(resolve(process.cwd(), 'components/chat/ChatInterface.tsx'), 'utf8');
+const adminSettings = readFileSync(resolve(process.cwd(), 'components/admin/SystemSettingsTab.tsx'), 'utf8');
 
 for (const role of ['answer', 'rewriter', 'summarizer']) {
   if (!aiSettings.includes(`${role}:`)) {
     throw new Error(`Missing inference role setting: ${role}`);
   }
-}
-
-if (!aiSettings.includes('AI_SESSION_CREDENTIALS_STORAGE_KEY')) {
-  throw new Error('Missing session-only credential storage support');
 }
 
 if (!aiSettings.includes('toRuntimeInferenceConfig')) {
@@ -23,12 +19,12 @@ if (!chatInterface.includes('inferenceConfig: toRuntimeInferenceConfig(aiSetting
   throw new Error('Chat requests do not include runtime inference config');
 }
 
-if (!setupModal.includes('Tra cứu căn cứ pháp lý được quản lý an toàn bởi máy chủ')) {
-  throw new Error('Setup modal must explain server-managed legal retrieval without technical internals');
+if (aiSettings.includes('credentials,') || aiSettings.includes('providerCredentials')) {
+  throw new Error('Runtime inference config must not include browser credentials');
 }
 
-if (setupModal.includes('type="text"') && setupModal.includes('API key')) {
-  throw new Error('Provider API key inputs should not be plain text');
+if (adminSettings.includes('placeholder="API key"') || adminSettings.includes('type="password"')) {
+  throw new Error('Admin settings must not render provider API key inputs');
 }
 
 console.log('Inference settings verification passed.');

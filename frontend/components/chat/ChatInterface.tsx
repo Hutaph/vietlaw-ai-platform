@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, PanelLeft, LibraryBig, Check, ChevronDown, Square, ArrowDown, X } from 'lucide-react';
 import { ProviderSelector } from './ProviderSelector';
 import { AdvancedSettings, AdvancedConfig } from './AdvancedSettings';
-import { InferenceSetupModal } from './InferenceSetupModal';
 import { ChatMessage } from './ChatMessage';
 import { Sidebar } from './Sidebar';
 import { ChatEmptyState } from './ChatEmptyState';
@@ -15,7 +14,6 @@ import { useChatSessions } from '@/hooks/use-chat-sessions';
 import { useClickOutside } from '@/hooks/use-click-outside';
 import { useAISettings } from '@/hooks/use-ai-settings';
 import {
-  isInferenceConfigured,
   setRoleByModel,
   toRuntimeInferenceConfig,
 } from '@/lib/ai-settings';
@@ -731,10 +729,6 @@ export function ChatInterface() {
           </div>
         </div>
       </div>
-
-      {!isInferenceConfigured(aiSettings) && (
-        <InferenceSetupModal />
-      )}
 
       {/* Context Drawer */}
       <div

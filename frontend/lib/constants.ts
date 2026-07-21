@@ -60,9 +60,9 @@ export const LAW_CATEGORIES = [
 
 // Danh sách model AI hỗ trợ
 export const AI_PROVIDERS: InferenceProvider[] = [
-  { id: 'google', name: 'Google AI Studio', requiresApiKey: true, deploymentSupported: true },
-  { id: 'huggingface', name: 'HuggingFace Router', requiresApiKey: true, deploymentSupported: true },
-  { id: 'ollama', name: 'Ollama', requiresApiKey: false, deploymentSupported: false },
+  { id: 'google', name: 'Google AI Studio', deploymentSupported: true },
+  { id: 'huggingface', name: 'HuggingFace Router', deploymentSupported: true },
+  { id: 'ollama', name: 'Ollama', deploymentSupported: false },
 ];
 
 export const AI_MODELS: AIModel[] = [
