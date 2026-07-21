@@ -4,7 +4,6 @@ import type {
   InferenceRoleId,
   InferenceRoleSetting,
   InferenceRoleSettings,
-  ProviderCredentialSettings,
 } from './types';
 
 export interface AISettings {
@@ -25,14 +24,12 @@ export interface AISettings {
   enableReranker: boolean;
   enableSemanticCache: boolean;
   enableMemory: boolean;
-  providerCredentials: ProviderCredentialSettings;
   roles: InferenceRoleSettings;
   useSameModelForHelperRoles: boolean;
   useServerFallbacks: boolean;
 }
 
 export const AI_SETTINGS_STORAGE_KEY = 'vietlaw_ai_settings';
-export const AI_SESSION_CREDENTIALS_STORAGE_KEY = 'vietlaw_ai_session_credentials';
 export const AI_SETTINGS_UPDATED_EVENT = 'vietlaw-ai-settings-updated';
 
 const DEFAULT_ROLE: InferenceRoleSetting = {
@@ -58,10 +55,6 @@ export const DEFAULT_AI_SETTINGS: AISettings = {
   enableReranker: true,
   enableSemanticCache: true,
   enableMemory: true,
-  providerCredentials: {
-    google: { apiKey: '', remember: true },
-    huggingface: { apiKey: '', remember: true },
-  },
   roles: {
     answer: { ...DEFAULT_ROLE },
     rewriter: { ...DEFAULT_ROLE },
@@ -97,44 +90,6 @@ function normalizeRole(value: Partial<InferenceRoleSetting> | null | undefined):
   return { provider, model };
 }
 
-function normalizeCredentials(value: Partial<ProviderCredentialSettings> | null | undefined): ProviderCredentialSettings {
-  return {
-    google: {
-      apiKey: typeof value?.google?.apiKey === 'string' ? value.google.apiKey : '',
-      remember: value?.google?.remember ?? true,
-    },
-    huggingface: {
-      apiKey: typeof value?.huggingface?.apiKey === 'string' ? value.huggingface.apiKey : '',
-      remember: value?.huggingface?.remember ?? true,
-    },
-  };
-}
-
-function mergeSessionCredentials(settings: AISettings): AISettings {
-  if (typeof window === 'undefined') return settings;
-  try {
-    const raw = window.sessionStorage.getItem(AI_SESSION_CREDENTIALS_STORAGE_KEY);
-    if (!raw) return settings;
-    const sessionCredentials = normalizeCredentials(JSON.parse(raw));
-    const currentGoogle = settings.providerCredentials.google ?? { apiKey: '', remember: true };
-    const currentHuggingFace = settings.providerCredentials.huggingface ?? { apiKey: '', remember: true };
-    return {
-      ...settings,
-      providerCredentials: {
-        ...settings.providerCredentials,
-        google: sessionCredentials.google?.apiKey
-          ? { ...currentGoogle, apiKey: sessionCredentials.google.apiKey }
-          : currentGoogle,
-        huggingface: sessionCredentials.huggingface?.apiKey
-          ? { ...currentHuggingFace, apiKey: sessionCredentials.huggingface.apiKey }
-          : currentHuggingFace,
-      },
-    };
-  } catch {
-    return settings;
-  }
-}
-
 export function normalizeAISettings(value: Partial<AISettings> | null | undefined): AISettings {
   const legacyModel = typeof value?.model === 'string' && value.model ? value.model : DEFAULT_AI_SETTINGS.model;
   const answer = normalizeRole(value?.roles?.answer ?? {
@@ -166,7 +121,6 @@ export function normalizeAISettings(value: Partial<AISettings> | null | undefine
     enableReranker: value?.enableReranker ?? DEFAULT_AI_SETTINGS.enableReranker,
     enableSemanticCache: value?.enableSemanticCache ?? DEFAULT_AI_SETTINGS.enableSemanticCache,
     enableMemory: value?.enableMemory ?? DEFAULT_AI_SETTINGS.enableMemory,
-    providerCredentials: normalizeCredentials(value?.providerCredentials),
     roles,
     useSameModelForHelperRoles,
     useServerFallbacks: value?.useServerFallbacks ?? DEFAULT_AI_SETTINGS.useServerFallbacks,
@@ -178,42 +132,15 @@ export function readAISettings(): AISettings {
 
   try {
     const raw = window.localStorage.getItem(AI_SETTINGS_STORAGE_KEY);
-    const settings = raw ? normalizeAISettings(JSON.parse(raw)) : DEFAULT_AI_SETTINGS;
-    return mergeSessionCredentials(settings);
+    return raw ? normalizeAISettings(JSON.parse(raw)) : DEFAULT_AI_SETTINGS;
   } catch {
     return DEFAULT_AI_SETTINGS;
   }
 }
 
-function splitCredentialStorage(settings: AISettings) {
-  const google = settings.providerCredentials.google ?? { apiKey: '', remember: true };
-  const huggingface = settings.providerCredentials.huggingface ?? { apiKey: '', remember: true };
-  const localSettings: AISettings = {
-    ...settings,
-    providerCredentials: {
-      ...settings.providerCredentials,
-      google: google.remember ? google : { ...google, apiKey: '' },
-      huggingface: huggingface.remember ? huggingface : { ...huggingface, apiKey: '' },
-    },
-  };
-
-  const sessionCredentials: ProviderCredentialSettings = {
-    google: google.remember
-      ? { apiKey: '', remember: true }
-      : google,
-    huggingface: huggingface.remember
-      ? { apiKey: '', remember: true }
-      : huggingface,
-  };
-
-  return { localSettings, sessionCredentials };
-}
-
 export function persistAISettings(settings: AISettings): AISettings {
   const normalized = normalizeAISettings(settings);
-  const { localSettings, sessionCredentials } = splitCredentialStorage(normalized);
-  window.localStorage.setItem(AI_SETTINGS_STORAGE_KEY, JSON.stringify(localSettings));
-  window.sessionStorage.setItem(AI_SESSION_CREDENTIALS_STORAGE_KEY, JSON.stringify(sessionCredentials));
+  window.localStorage.setItem(AI_SETTINGS_STORAGE_KEY, JSON.stringify(normalized));
   window.dispatchEvent(new CustomEvent(AI_SETTINGS_UPDATED_EVENT, { detail: normalized }));
   return normalized;
 }
@@ -221,14 +148,11 @@ export function persistAISettings(settings: AISettings): AISettings {
 export function clearInferenceSettings() {
   if (typeof window === 'undefined') return;
   window.localStorage.removeItem(AI_SETTINGS_STORAGE_KEY);
-  window.sessionStorage.removeItem(AI_SESSION_CREDENTIALS_STORAGE_KEY);
   window.dispatchEvent(new CustomEvent(AI_SETTINGS_UPDATED_EVENT, { detail: DEFAULT_AI_SETTINGS }));
 }
 
 export function isProviderCredentialReady(settings: AISettings, provider: InferenceProviderId): boolean {
-  const providerMeta = AI_PROVIDERS.find(item => item.id === provider);
-  if (!providerMeta?.requiresApiKey) return true;
-  return Boolean(settings.providerCredentials[provider]?.apiKey?.trim());
+  return AI_PROVIDERS.some(item => item.id === provider);
 }
 
 export function isInferenceConfigured(settings: AISettings): boolean {
@@ -255,14 +179,7 @@ export function setRoleByModel(settings: AISettings, role: InferenceRoleId, mode
 }
 
 export function toRuntimeInferenceConfig(settings: AISettings) {
-  const credentials = Object.fromEntries(
-    Object.entries(settings.providerCredentials)
-      .filter(([, credential]) => credential?.apiKey?.trim())
-      .map(([provider, credential]) => [provider, { apiKey: credential?.apiKey?.trim() }]),
-  );
-
   return {
-    credentials,
     roles: settings.roles,
     useServerFallbacks: settings.useServerFallbacks,
   };
