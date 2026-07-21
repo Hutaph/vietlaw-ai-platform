@@ -8,6 +8,8 @@ from pathlib import Path
 from statistics import median
 from typing import Any, Iterable, Sequence
 
+from app.config import CORPUS_JSONL_PATH
+
 
 _CITE_ID_RE = re.compile(r"<cite\s+id=[\"']([^\"']+)[\"']>", re.IGNORECASE)
 _SOURCE_ID_RE = re.compile(r"\b[A-Z][A-Z0-9]+_\d{4}_D\d+(?:_K\d+)?\b")
@@ -120,7 +122,26 @@ def load_quality_dataset(path: str | Path) -> list[QualityRecord]:
 
 def load_corpus_source_ids(json_data_path: str | Path) -> set[str]:
     source_ids: set[str] = set()
-    for file_path in Path(json_data_path).glob("*.json"):
+    path = Path(json_data_path)
+    if path.is_file() and path.suffix == ".jsonl":
+        corpus_files = [path]
+    elif Path(CORPUS_JSONL_PATH).exists():
+        corpus_files = [Path(CORPUS_JSONL_PATH)]
+    else:
+        corpus_files = list(path.glob("*.json"))
+
+    for file_path in corpus_files:
+        if file_path.suffix == ".jsonl":
+            with file_path.open("r", encoding="utf-8") as handle:
+                for line in handle:
+                    if not line.strip():
+                        continue
+                    record = json.loads(line)
+                    source_id = record.get("node_id")
+                    if isinstance(source_id, str) and source_id:
+                        source_ids.add(source_id)
+            continue
+
         with file_path.open("r", encoding="utf-8") as handle:
             data = json.load(handle)
         for clause in data.get("clauses", []):

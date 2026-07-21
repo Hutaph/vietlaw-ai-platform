@@ -253,6 +253,8 @@ class QdrantSearcher:
                 "id": payload.get("id", point.id),
                 "law_id": payload.get("law_id"),
                 "category": payload.get("category"),
+                "position": payload.get("position", {}),
+                **(payload.get("metadata") or {}),
             }
             documents.append(
                 Document(page_content=payload.get("content", ""), metadata=metadata)

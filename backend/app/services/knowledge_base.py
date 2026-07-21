@@ -6,9 +6,10 @@ mà không phụ thuộc vào vector store.
 import os
 import json
 import glob
-from typing import Dict, Any, List, Optional
+from pathlib import Path
+from typing import Dict, Any, Iterable, List, Optional
 
-from app.config import JSON_DATA_PATH
+from app.config import CORPUS_EMBED_LEVELS, CORPUS_JSONL_PATH, JSON_DATA_PATH
 from app.utils.logging import setup_logger
 
 logger = setup_logger("vietlaw.knowledge_base")
@@ -63,6 +64,98 @@ _LEGACY_CATEGORY_ALIASES = {
 }
 
 
+def _merge_position(record: Dict[str, Any]) -> Dict[str, Any]:
+    hierarchy = record.get("hierarchy")
+    position = dict(hierarchy) if isinstance(hierarchy, dict) else {}
+    for key in ("level", "number", "title", "citation_label", "order_index"):
+        value = record.get(key)
+        if value not in (None, ""):
+            position[key] = value
+    return position
+
+
+def _display_law_name(record: Dict[str, Any], fallback: str) -> str:
+    title = str(record.get("title") or "").strip()
+    citation_label = str(record.get("citation_label") or "").strip()
+    level = str(record.get("level") or "").strip()
+
+    if level == "document" and title:
+        return title
+    if level == "document" and citation_label:
+        return citation_label
+    return fallback
+
+
+def _iter_legacy_json_clauses(json_data_path: str | Path = JSON_DATA_PATH) -> Iterable[Dict[str, Any]]:
+    for file_path in Path(json_data_path).glob("*.json"):
+        with file_path.open("r", encoding="utf-8") as handle:
+            data = json.load(handle)
+        law_info = data.get("law_info", {})
+        law_id = law_info.get("law_id")
+        law_name = law_info.get("law_name", "")
+        for clause in data.get("clauses", []):
+            source_id = clause.get("id")
+            content = clause.get("content", "")
+            if not source_id or not law_id:
+                continue
+            yield {
+                "id": source_id,
+                "law_id": law_id,
+                "law_name": law_name,
+                "summary": law_info.get("executive_summary", ""),
+                "category": determine_category(law_name),
+                "position": clause.get("position", {}),
+                "content": content,
+                "cross_references": clause.get("cross_references", []),
+            }
+
+
+def _iter_jsonl_corpus_clauses(corpus_jsonl_path: str | Path = CORPUS_JSONL_PATH) -> Iterable[Dict[str, Any]]:
+    law_names: Dict[str, str] = {}
+    path = Path(corpus_jsonl_path)
+    with path.open("r", encoding="utf-8") as handle:
+        for line_number, line in enumerate(handle, start=1):
+            stripped = line.strip()
+            if not stripped:
+                continue
+            try:
+                record = json.loads(stripped)
+            except json.JSONDecodeError as exc:
+                raise ValueError(f"Invalid corpus JSONL at {path}:{line_number}: {exc}") from exc
+
+            law_id = str(record.get("law_id") or "").strip()
+            source_id = str(record.get("node_id") or "").strip()
+            content = str(record.get("text") or "").strip()
+            level = str(record.get("level") or "").strip().lower()
+            if not law_id or not source_id or not content:
+                continue
+
+            current_law_name = law_names.get(law_id, law_id)
+            law_name = _display_law_name(record, current_law_name)
+            if law_name and (record.get("level") == "document" or law_id not in law_names):
+                law_names[law_id] = law_name
+            if CORPUS_EMBED_LEVELS and level not in CORPUS_EMBED_LEVELS:
+                continue
+
+            yield {
+                "id": source_id,
+                "law_id": law_id,
+                "law_name": law_names.get(law_id, law_name or law_id),
+                "summary": "",
+                "category": determine_category(law_names.get(law_id, law_name or "")),
+                "position": _merge_position(record),
+                "content": content,
+                "cross_references": [],
+                "metadata": {
+                    "anchors": record.get("anchors", []),
+                    "citation_label": record.get("citation_label", ""),
+                    "raw_path": record.get("raw_path", ""),
+                    "source_url": record.get("source_url", ""),
+                    "text_hash": record.get("text_hash", ""),
+                },
+            }
+
+
 def determine_category(law_name: str) -> str:
     """Phân loại văn bản theo các lựa chọn trên giao diện."""
     name_lower = law_name.lower()
@@ -114,36 +207,42 @@ def document_matches_category(
 
 
 def load_knowledge_base() -> None:
-    """Nạp toàn bộ dữ liệu JSON vào RAM để Chatbot truy xuất siêu tốc."""
+    """Nạp corpus vào RAM để chatbot dựng context và metadata tài liệu."""
     global KNOWLEDGE_BASE, LAW_METADATA
-    json_files = glob.glob(os.path.join(JSON_DATA_PATH, "*.json"))
+    KNOWLEDGE_BASE.clear()
+    LAW_METADATA.clear()
 
-    logger.info("Đang nạp %d file JSON vào bộ nhớ...", len(json_files))
+    corpus_jsonl = Path(CORPUS_JSONL_PATH)
+    if corpus_jsonl.exists():
+        logger.info("Đang nạp corpus JSONL vào bộ nhớ: %s", corpus_jsonl)
+        clause_iterable = _iter_jsonl_corpus_clauses(corpus_jsonl)
+    else:
+        json_files = glob.glob(os.path.join(JSON_DATA_PATH, "*.json"))
+        logger.info("Đang nạp %d file JSON legacy vào bộ nhớ...", len(json_files))
+        clause_iterable = _iter_legacy_json_clauses(JSON_DATA_PATH)
 
-    for file_path in json_files:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            law_info = data.get("law_info", {})
-            clauses = data.get("clauses", [])
-
-            law_id = law_info.get("law_id")
-            law_name = law_info.get("law_name", "")
-
-            # Lưu trữ thông tin chung của văn bản luật
-            LAW_METADATA[law_id] = {
+    for clause in clause_iterable:
+        law_id = clause["law_id"]
+        law_name = clause.get("law_name", law_id)
+        LAW_METADATA.setdefault(
+            law_id,
+            {
                 "law_name": law_name,
-                "summary": law_info.get("executive_summary", ""),
-                "category": determine_category(law_name)
-            }
+                "summary": clause.get("summary", ""),
+                "category": clause.get("category") or determine_category(law_name),
+            },
+        )
+        if law_name and LAW_METADATA[law_id].get("law_name") in ("", law_id):
+            LAW_METADATA[law_id]["law_name"] = law_name
+            LAW_METADATA[law_id]["category"] = determine_category(law_name)
 
-            # Lưu trữ chi tiết từng điều khoản
-            for clause in clauses:
-                KNOWLEDGE_BASE[clause["id"]] = {
-                    "law_id": law_id,
-                    "position": clause.get("position", {}),
-                    "content": clause.get("content", ""),
-                    "cross_references": clause.get("cross_references", [])
-                }
+        KNOWLEDGE_BASE[clause["id"]] = {
+            "law_id": law_id,
+            "position": clause.get("position", {}),
+            "content": clause.get("content", ""),
+            "cross_references": clause.get("cross_references", []),
+            "metadata": clause.get("metadata", {}),
+        }
 
     logger.info(
         "Nạp dữ liệu vào RAM hoàn tất! (%d điều khoản, %d văn bản)",
