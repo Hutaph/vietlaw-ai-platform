@@ -15,18 +15,25 @@ interface Chunk {
 export default function ChunkViewer({ lawId, onClose }: ChunkViewerProps) {
   const [chunks, setChunks] = useState<Chunk[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchChunks = async () => {
       setIsLoading(true);
+      setError(null);
       try {
         const res = await fetch(`/api/documents/${lawId}/chunks`);
-        if (res.ok) {
-          const data = await res.json();
-          setChunks(data.chunks || []);
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data.details || data.error || `HTTP ${res.status}`);
         }
+        if (!Array.isArray(data.chunks)) {
+          throw new Error('Phản hồi từ máy chủ không đúng định dạng.');
+        }
+        setChunks(data.chunks || []);
       } catch (e) {
-        console.error('Failed to fetch chunks', e);
+        console.error('Không thể tải các đoạn dữ liệu', e);
+        setError(e instanceof Error ? e.message : 'Không thể tải các đoạn dữ liệu.');
       } finally {
         setIsLoading(false);
       }
@@ -45,7 +52,7 @@ export default function ChunkViewer({ lawId, onClose }: ChunkViewerProps) {
             <Layers className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-[14px] font-bold text-gray-900 dark:text-white">Cấu trúc Chunking</h3>
+            <h3 className="text-[14px] font-bold text-gray-900 dark:text-white">Các đoạn dữ liệu</h3>
             <p className="text-[11px] text-gray-500 dark:text-gray-400 font-mono">{lawId}</p>
           </div>
         </div>
@@ -71,17 +78,23 @@ export default function ChunkViewer({ lawId, onClose }: ChunkViewerProps) {
               </div>
             ))}
           </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center h-40 text-center text-gray-500 text-sm">
+            <Database className="w-8 h-8 mb-2 opacity-20" />
+            <p className="font-medium text-gray-700 dark:text-gray-300">Không thể tải các đoạn dữ liệu.</p>
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{error}</p>
+          </div>
         ) : chunks.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-40 text-gray-500 text-sm">
             <Database className="w-8 h-8 mb-2 opacity-20" />
-            Không tìm thấy chunk nào cho tài liệu này.
+            Không tìm thấy đoạn dữ liệu nào cho văn bản này.
           </div>
         ) : (
           <div className="space-y-4 relative before:absolute before:inset-y-0 before:left-[19px] before:w-px before:bg-indigo-100 dark:before:bg-indigo-900/50">
             <div className="text-[11px] font-medium text-gray-500 mb-6 pl-12">
-              Tìm thấy <span className="text-indigo-600 dark:text-indigo-400 font-bold">{chunks.length}</span> chunks
+              Tìm thấy <span className="text-indigo-600 dark:text-indigo-400 font-bold">{chunks.length}</span> đoạn dữ liệu
             </div>
-            {chunks.map((chunk, index) => (
+            {chunks.map(chunk => (
               <div key={chunk.id} className="relative pl-12">
                 <div className="absolute left-[13px] top-4 w-3 h-3 rounded-full border-2 border-indigo-600 dark:border-indigo-400 bg-white dark:bg-slate-900 z-10 shadow-sm ring-4 ring-slate-50 dark:ring-slate-950"></div>
                 
