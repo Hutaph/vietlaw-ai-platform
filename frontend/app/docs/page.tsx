@@ -31,7 +31,7 @@ export default function DocumentDashboard() {
 
       setDocuments(data.documents);
     } catch (e: unknown) {
-      console.error('Failed to fetch documents', e);
+      console.error('Không thể tải kho tài liệu', e);
       setLoadError(e instanceof Error ? e.message : 'Không thể tải kho tài liệu.');
     } finally {
       setIsLoading(false);
@@ -57,7 +57,7 @@ export default function DocumentDashboard() {
               <BookOpen className="w-4 h-4" />
             </div>
             <div>
-              <h1 className="text-[15px] font-bold text-gray-800 dark:text-gray-100 leading-tight">Kho Tài Liệu</h1>
+              <h1 className="text-[15px] font-bold text-gray-800 dark:text-gray-100 leading-tight">Kho tài liệu</h1>
               <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400">Quản lý & trực quan hóa dữ liệu pháp luật</p>
             </div>
           </div>
@@ -113,7 +113,7 @@ export default function DocumentDashboard() {
           </div>
         </div>
         
-        {/* Slide-over panel for chunks */}
+        {/* Bảng chi tiết các đoạn dữ liệu */}
         <div className={`absolute top-0 right-0 h-full bg-white dark:bg-slate-900 border-l border-gray-200 dark:border-slate-800 shadow-2xl transition-transform duration-300 w-[400px] flex flex-col ${selectedDocId ? 'translate-x-0' : 'translate-x-full'}`}>
           {selectedDocId && (
             <ChunkViewer 

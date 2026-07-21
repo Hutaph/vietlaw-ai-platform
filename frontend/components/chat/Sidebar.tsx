@@ -65,7 +65,7 @@ export function Sidebar({
           </div>
           <div>
             <span className="text-sm font-bold text-gray-800 dark:text-white tracking-tight">VietLaw AI</span>
-            <span className="block text-[9px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-widest leading-none mt-0.5">Legal Assistant</span>
+            <span className="block text-[9px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-widest leading-none mt-0.5">Trợ lý pháp luật</span>
           </div>
         </div>
         <button
@@ -91,7 +91,7 @@ export function Sidebar({
           className="w-full flex items-center justify-center gap-2 rounded-xl py-2.5 px-3 transition-all duration-200 border border-gray-200 dark:border-white/5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/5 active:scale-98"
         >
           <LibraryBig className="w-4 h-4" />
-          <span className="text-[13px] font-semibold">Kho Tài Liệu</span>
+          <span className="text-[13px] font-semibold">Kho tài liệu</span>
         </Link>
         <Link
           href="/admin"
@@ -102,7 +102,6 @@ export function Sidebar({
         </Link>
       </div>
 
-      {/* Search Bar */}
       <div className="px-3 pb-3 flex-shrink-0">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />

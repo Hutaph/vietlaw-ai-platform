@@ -7,10 +7,12 @@ import DocumentList from '@/components/docs/DocumentList';
 import UploadModal from '@/components/docs/UploadModal';
 import Link from 'next/link';
 import SystemSettingsTab from '@/components/admin/SystemSettingsTab';
+import ChunkViewer from '@/components/docs/ChunkViewer';
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = React.useState<'analytics' | 'docs' | 'settings'>('analytics');
   const [isUploadOpen, setIsUploadOpen] = React.useState(false);
+  const [selectedDocId, setSelectedDocId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     if (window.location.hash === '#settings') setActiveTab('settings');
@@ -29,7 +31,7 @@ export default function AdminPage() {
             </div>
             <div>
               <h1 className="text-lg font-bold text-gray-900 dark:text-white leading-tight">Quản trị hệ thống</h1>
-              <p className="text-xs text-gray-500 font-medium">Analytics & Data Management</p>
+              <p className="text-xs text-gray-500 font-medium">Thống kê và quản lý dữ liệu</p>
             </div>
           </div>
         </div>
@@ -80,10 +82,14 @@ export default function AdminPage() {
             ) : activeTab === 'settings' ? (
               <SystemSettingsTab />
             ) : (
-              <div className="space-y-4">
+              <div className="relative min-h-[520px] overflow-hidden">
+                <div className={`space-y-4 transition-all duration-300 ${selectedDocId ? 'lg:pr-[420px]' : ''}`}>
                 <div className="flex justify-between items-start mb-6">
                   <div>
                     <h2 className="text-lg font-bold text-gray-900 dark:text-white">Kho tài liệu</h2>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                      Danh sách văn bản luật đã được nạp vào hệ thống truy xuất.
+                    </p>
                   </div>
                   <button 
                     onClick={() => setIsUploadOpen(true)}
@@ -93,7 +99,20 @@ export default function AdminPage() {
                     Thêm tài liệu
                   </button>
                 </div>
-                <DocumentList isAdmin={true} />
+                <DocumentList
+                  isAdmin={true}
+                  selectedId={selectedDocId}
+                  onSelect={setSelectedDocId}
+                />
+                </div>
+                <div className={`absolute inset-y-0 right-0 z-20 w-full max-w-[400px] border-l border-gray-200 bg-white shadow-2xl transition-transform duration-300 dark:border-slate-800 dark:bg-slate-900 ${selectedDocId ? 'translate-x-0' : 'translate-x-full'}`}>
+                  {selectedDocId && (
+                    <ChunkViewer
+                      lawId={selectedDocId}
+                      onClose={() => setSelectedDocId(null)}
+                    />
+                  )}
+                </div>
               </div>
             )}
           </div>
