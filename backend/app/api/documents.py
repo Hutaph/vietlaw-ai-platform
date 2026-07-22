@@ -23,6 +23,17 @@ async def list_documents():
             "summary": meta.get("summary", ""),
             "category": meta.get("category", "")
         })
+    if docs:
+        return {"documents": docs}
+
+    if STORAGE_BACKEND.lower() in {"qdrant_postgres", "postgres", "postgresql", "qdrant"}:
+        try:
+            from app.services.storage import list_legal_documents
+            return {"documents": list_legal_documents()}
+        except Exception as exc:
+            logger.error("Failed to list documents from database storage: %s", exc)
+            raise HTTPException(status_code=503, detail="Không thể tải danh sách tài liệu từ cơ sở dữ liệu.")
+
     return {"documents": docs}
 
 
@@ -37,6 +48,17 @@ async def get_document_chunks(law_id: str):
                 "content": chunk_data.get("content", ""),
                 "position": chunk_data.get("position", {})
             })
+    if chunks:
+        return {"chunks": chunks}
+
+    if STORAGE_BACKEND.lower() in {"qdrant_postgres", "postgres", "postgresql", "qdrant"}:
+        try:
+            from app.services.storage import list_document_chunks
+            return {"chunks": list_document_chunks(law_id)}
+        except Exception as exc:
+            logger.error("Failed to list chunks for %s from database storage: %s", law_id, exc)
+            raise HTTPException(status_code=503, detail="Không thể tải các đoạn dữ liệu từ cơ sở dữ liệu.")
+
     return {"chunks": chunks}
 
 

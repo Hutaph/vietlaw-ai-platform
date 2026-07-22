@@ -165,6 +165,69 @@ def _ensure_schema() -> None:
                 cursor.execute(statement)
 
 
+def list_legal_documents() -> List[Dict[str, Any]]:
+    """Return legal document records stored in PostgreSQL."""
+    if not is_database_backend_enabled():
+        return []
+
+    _ensure_schema()
+    with _connect_postgres(autocommit=True) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT
+                    l.law_id,
+                    l.law_name,
+                    COALESCE(l.summary, '') AS summary,
+                    COALESCE(l.category, '') AS category,
+                    COALESCE(l.metadata, '{}'::jsonb) AS metadata,
+                    COUNT(c.id) AS clause_count
+                FROM laws l
+                LEFT JOIN clauses c ON c.law_id = l.law_id
+                GROUP BY l.law_id, l.law_name, l.summary, l.category, l.metadata
+                ORDER BY l.law_name ASC, l.law_id ASC
+                """
+            )
+            return [
+                {
+                    "id": row[0],
+                    "name": row[1],
+                    "summary": row[2],
+                    "category": row[3],
+                    "metadata": row[4] or {},
+                    "chunkCount": int(row[5] or 0),
+                }
+                for row in cursor.fetchall()
+            ]
+
+
+def list_document_chunks(law_id: str) -> List[Dict[str, Any]]:
+    """Return clause chunks for one legal document from PostgreSQL."""
+    if not is_database_backend_enabled():
+        return []
+
+    _ensure_schema()
+    with _connect_postgres(autocommit=True) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT id, content, COALESCE(position, '{}'::jsonb)
+                FROM clauses
+                WHERE law_id = %s
+                ORDER BY id ASC
+                """,
+                (law_id,),
+            )
+            return [
+                {
+                    "id": row[0],
+                    "content": row[1],
+                    "position": row[2] or {},
+                }
+                for row in cursor.fetchall()
+            ]
+
+
 def _start_indexing_run(source: str, details: Optional[Dict[str, Any]] = None) -> Optional[int]:
     """Create a new indexing run record and return its id when PostgreSQL is available."""
     try:
