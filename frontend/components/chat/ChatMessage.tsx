@@ -160,7 +160,7 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
                 title={copied ? 'Đã sao chép!' : 'Sao chép'}
                 className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
               >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                {copied ? <Check className="w-3.5 h-3.5 text-rose-500" /> : <Copy className="w-3.5 h-3.5" />}
               </button>
               {onRefine && (
                 <button
@@ -188,7 +188,7 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
                   className="quick-action-btn flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-gray-500 dark:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
                 >
                   {copied
-                    ? <Check className="w-3.5 h-3.5 text-emerald-500" />
+                    ? <Check className="w-3.5 h-3.5 text-rose-500" />
                     : <Copy className="w-3.5 h-3.5" />
                   }
                   <span>{copied ? 'Đã chép' : 'Sao chép'}</span>
@@ -221,7 +221,7 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
                 <button
                   onClick={() => handleFeedbackClick('up')}
                   title="Câu trả lời hữu ích"
-                  className={`quick-action-btn p-1.5 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 ${feedback === 'up' ? 'text-emerald-500' : 'text-gray-400'}`}
+                  className={`quick-action-btn p-1.5 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 ${feedback === 'up' ? 'text-rose-500' : 'text-gray-400'}`}
                 >
                   <ThumbsUp className="w-3.5 h-3.5" />
                 </button>

@@ -128,7 +128,7 @@ export function LegalSourceList({ sources = [] }: LegalSourceListProps) {
                   aria-label="Sao chép trích dẫn"
                   title={copiedKey === key ? 'Đã sao chép' : 'Sao chép trích dẫn'}
                 >
-                  {copiedKey === key ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copiedKey === key ? <Check className="h-3.5 w-3.5 text-rose-600" /> : <Copy className="h-3.5 w-3.5" />}
                 </button>
               </div>
 

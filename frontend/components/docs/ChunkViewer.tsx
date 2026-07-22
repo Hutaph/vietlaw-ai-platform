@@ -142,7 +142,7 @@ export default function ChunkViewer({ lawId, onClose }: ChunkViewerProps) {
                         <span className="truncate">{getReadableChunkId(chunk.id)}</span>
                       </div>
                       {positionLabel && (
-                        <span className="inline-flex max-w-full rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold leading-4 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
+                        <span className="inline-flex max-w-full rounded-full border border-rose-100 bg-rose-50 px-2.5 py-1 text-[11px] font-semibold leading-4 text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">
                           {positionLabel}
                         </span>
                       )}

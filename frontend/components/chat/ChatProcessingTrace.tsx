@@ -49,7 +49,7 @@ function getSummary(stage: ChatProcessingStage): string {
 }
 
 function StatusIcon({ stage }: { stage: ChatProcessingStage }) {
-  if (stage === 'completed') return <Check className="h-4 w-4 text-emerald-600" />;
+  if (stage === 'completed') return <Check className="h-4 w-4 text-rose-600" />;
   if (stage === 'cancelled' || stage === 'error') return <XCircle className="h-4 w-4 text-slate-500" />;
   return <Loader2 className="h-4 w-4 animate-spin text-rose-600 motion-reduce:animate-none" aria-hidden="true" />;
 }
@@ -134,7 +134,7 @@ export function ChatProcessingTrace({
               <span
                 className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
                   complete
-                    ? 'border-emerald-500 bg-emerald-500 text-white'
+                    ? 'border-rose-500 bg-rose-500 text-white'
                     : active
                       ? 'border-rose-500 bg-white text-rose-600 dark:bg-slate-950'
                       : 'border-slate-300 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-950'

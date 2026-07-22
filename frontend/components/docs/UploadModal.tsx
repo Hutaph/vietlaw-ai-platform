@@ -103,13 +103,13 @@ export default function UploadModal({ onClose, onSuccess }: UploadModalProps) {
         <div className="p-6 flex-1">
           {uploadStatus === 'success' ? (
             <div className="flex flex-col items-center justify-center py-8 text-center space-y-4">
-              <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center">
-                <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+              <div className="w-16 h-16 bg-rose-100 dark:bg-rose-500/20 rounded-full flex items-center justify-center">
+                <CheckCircle2 className="w-8 h-8 text-rose-600 dark:text-rose-300" />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Tải lên thành công!</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Tài liệu đã được phân tách thành <span className="font-bold text-emerald-600 dark:text-emerald-400">{chunksCount}</span> đoạn dữ liệu và đưa vào kho truy xuất.
+                  Tài liệu đã được phân tách thành <span className="font-bold text-rose-600 dark:text-rose-300">{chunksCount}</span> đoạn dữ liệu và đưa vào kho truy xuất.
                 </p>
               </div>
             </div>
