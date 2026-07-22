@@ -19,7 +19,9 @@ services:
       - qdrant_data:/qdrant/storage
 
   backend:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     # Backend preloads/warmups local embedding models when EMBEDDING_DEVICE=cuda.
     gpus: all
     ports:
@@ -72,7 +74,9 @@ services:
       - backend
 
   ingest:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     command: python scripts/ingest_to_storage.py
     profiles: ["tools"]
     gpus: all

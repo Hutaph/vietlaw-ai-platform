@@ -93,6 +93,7 @@ backend/evaluation/results.csv
 backend/data/chat_logs.json
 fine-tuning/data/local/
 reports/index_migrations/
+deploy/
 
 # =============================
 # Local Fine-tuned Models
