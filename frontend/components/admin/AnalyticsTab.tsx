@@ -16,6 +16,39 @@ interface Stats {
   by_date: Record<string, number>;
 }
 
+const PREVIEW_MAX_LENGTH = 360;
+
+function cleanHistoryPreview(value: string): string {
+  if (!value) return 'Chưa có nội dung phản hồi.';
+
+  const text = value
+    .replace(/<cite\s+id=["'][^"']+["']>([\s\S]*?)<\/cite>/gi, '$1')
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/#{1,6}\s+/g, '')
+    .replace(/^\s*[-*]\s+/gm, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (text.length <= PREVIEW_MAX_LENGTH) return text;
+  return `${text.slice(0, PREVIEW_MAX_LENGTH).trimEnd()}...`;
+}
+
+function formatLogTimestamp(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+
+  return date.toLocaleString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 export default function AnalyticsTab() {
   const [logs, setLogs] = useState<ChatLog[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -86,7 +119,7 @@ export default function AnalyticsTab() {
               <div key={log.id} className="p-4 bg-gray-50 dark:bg-slate-800/50 rounded-xl border border-gray-100 dark:border-slate-700/50 hover:border-rose-200 dark:hover:border-rose-700/50 transition-colors">
                 <div className="flex items-center gap-2 mb-3 text-xs text-gray-400">
                   <Clock className="w-3.5 h-3.5" />
-                  {new Date(log.timestamp).toLocaleString('vi-VN')}
+                  {formatLogTimestamp(log.timestamp)}
                 </div>
                 
                 <div className="space-y-3">
@@ -104,7 +137,7 @@ export default function AnalyticsTab() {
                       <Bot className="w-3.5 h-3.5 text-rose-600 dark:text-rose-300" />
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-3">
-                      {log.ai_response}
+                      {cleanHistoryPreview(log.ai_response)}
                     </p>
                   </div>
                 </div>
