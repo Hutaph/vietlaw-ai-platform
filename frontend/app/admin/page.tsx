@@ -93,7 +93,7 @@ export default function AdminPage() {
                   </div>
                   <button 
                     onClick={() => setIsUploadOpen(true)}
-                    className="flex shrink-0 items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors"
+                    className="flex shrink-0 items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-sm font-medium shadow-sm shadow-rose-600/15 transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     Thêm tài liệu
