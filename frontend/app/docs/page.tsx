@@ -53,7 +53,7 @@ export default function DocumentDashboard() {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-300">
               <BookOpen className="w-4 h-4" />
             </div>
             <div>
@@ -64,7 +64,7 @@ export default function DocumentDashboard() {
         </div>
         <button
           onClick={() => setIsUploadOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[13px] font-semibold rounded-xl transition-all shadow-sm active:scale-95"
+          className="flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-[13px] font-semibold rounded-xl transition-all shadow-sm shadow-rose-600/15 active:scale-95"
         >
           <Upload className="w-4 h-4" />
           Tải tài liệu lên
@@ -98,7 +98,7 @@ export default function DocumentDashboard() {
                 <button
                   type="button"
                   onClick={fetchDocuments}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition-colors"
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-xl transition-colors"
                 >
                   Thử lại
                 </button>

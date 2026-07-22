@@ -85,8 +85,8 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
             </div>
           ) : (
             <div
-              className="w-8 h-8 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20"
-              style={{ background: 'linear-gradient(135deg, #2563EB, #1D4ED8)' }}
+              className="w-8 h-8 rounded-xl flex items-center justify-center shadow-md shadow-rose-500/20"
+              style={{ background: 'linear-gradient(135deg, #F43F5E, #BE123C)' }}
             >
               <Scale className="w-4 h-4 text-white" />
             </div>
@@ -102,7 +102,7 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
                 ? 'inline-block max-w-[92%] sm:max-w-[88%] px-5 py-3.5 rounded-2xl rounded-tr-sm shadow-sm text-white'
                 : `${CHAT_CONTENT_WIDTH_CLASS} text-gray-800 dark:text-gray-200`
             }`}
-            style={isUser ? { background: 'linear-gradient(135deg, #2563EB, #1D4ED8)' } : {}}
+            style={isUser ? { background: 'linear-gradient(135deg, #F43F5E, #BE123C)' } : {}}
           >
             {message.content && (
               <div className={`prose dark:prose-invert max-w-none text-[15px] leading-7 prose-p:my-3 prose-ul:my-3 prose-ol:my-3 prose-li:my-1.5 prose-headings:mb-2 prose-headings:mt-5 prose-h2:text-xl prose-h3:text-lg prose-code:rounded prose-code:bg-slate-100 prose-code:px-1 prose-code:py-0.5 dark:prose-code:bg-white/10 ${isStreaming ? 'typing-cursor' : ''} ${
@@ -125,13 +125,13 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
                               const citedContext = message.contextUsed?.find(c => c.metadata?.id === citeId);
                               if (citedContext) setSelectedCitation(citedContext);
                             }}
-                            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium underline decoration-blue-400/60 dark:decoration-blue-500/50 decoration-dashed underline-offset-4 cursor-pointer transition-colors"
+                            className="text-rose-600 hover:text-rose-800 dark:text-rose-300 dark:hover:text-rose-200 font-medium underline decoration-rose-400/60 dark:decoration-rose-500/50 decoration-dashed underline-offset-4 cursor-pointer transition-colors"
                           >
                             {props.children}
                           </a>
                         );
                       }
-                      return <a {...props} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer" />;
+                      return <a {...props} className="text-rose-600 hover:underline" target="_blank" rel="noopener noreferrer" />;
                     }
                   }}
                 >
@@ -185,7 +185,7 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
                 <button
                   onClick={handleCopy}
                   title={copied ? 'Đã sao chép!' : 'Sao chép câu trả lời'}
-                  className="quick-action-btn flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-gray-500 dark:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                  className="quick-action-btn flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-gray-500 dark:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
                 >
                   {copied
                     ? <Check className="w-3.5 h-3.5 text-emerald-500" />
@@ -198,7 +198,7 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
                   <button
                     onClick={() => onRefine('Giải thích đơn giản hơn với ví dụ thực tế')}
                     title="Yêu cầu giải thích đơn giản hơn"
-                    className="quick-action-btn flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-gray-500 dark:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                    className="quick-action-btn flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-gray-500 dark:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     <span>Giải thích lại</span>
@@ -209,7 +209,7 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
                   <button
                     onClick={onRetry}
                     title="Thử lại câu hỏi trước"
-                    className="quick-action-btn flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-gray-500 dark:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                    className="quick-action-btn flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-gray-500 dark:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
                   >
                     <Undo2 className="w-3.5 h-3.5" />
                     <span>Thử lại</span>
@@ -221,7 +221,7 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
                 <button
                   onClick={() => handleFeedbackClick('up')}
                   title="Câu trả lời hữu ích"
-                  className={`quick-action-btn p-1.5 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${feedback === 'up' ? 'text-emerald-500' : 'text-gray-400'}`}
+                  className={`quick-action-btn p-1.5 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 ${feedback === 'up' ? 'text-emerald-500' : 'text-gray-400'}`}
                 >
                   <ThumbsUp className="w-3.5 h-3.5" />
                 </button>
@@ -229,7 +229,7 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
                   <button
                     onClick={() => handleFeedbackClick('down')}
                     title="Câu trả lời chưa tốt"
-                    className={`quick-action-btn p-1.5 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${feedback === 'down' ? 'text-red-400' : 'text-gray-400'}`}
+                    className={`quick-action-btn p-1.5 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 ${feedback === 'down' ? 'text-red-400' : 'text-gray-400'}`}
                   >
                     <ThumbsDown className="w-3.5 h-3.5" />
                   </button>
@@ -241,7 +241,7 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
                       <select
                         value={reason}
                         onChange={(e) => setReason(e.target.value)}
-                        className="w-full bg-gray-50 dark:bg-[#171717] border border-gray-200 dark:border-white/10 rounded-lg text-xs p-2 mb-2 text-gray-700 dark:text-gray-300 outline-none focus:border-blue-500"
+                        className="w-full bg-gray-50 dark:bg-[#171717] border border-gray-200 dark:border-white/10 rounded-lg text-xs p-2 mb-2 text-gray-700 dark:text-gray-300 outline-none focus:border-rose-400"
                       >
                         <option value="Sai luật">Sai luật</option>
                         <option value="Trích dẫn sai">Trích dẫn sai</option>
@@ -252,7 +252,7 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
                         placeholder="Góp ý thêm (không bắt buộc)..."
-                        className="w-full bg-gray-50 dark:bg-[#171717] border border-gray-200 dark:border-white/10 rounded-lg text-xs p-2 mb-2 min-h-[60px] text-gray-700 dark:text-gray-300 outline-none focus:border-blue-500 resize-none custom-scrollbar"
+                        className="w-full bg-gray-50 dark:bg-[#171717] border border-gray-200 dark:border-white/10 rounded-lg text-xs p-2 mb-2 min-h-[60px] text-gray-700 dark:text-gray-300 outline-none focus:border-rose-400 resize-none custom-scrollbar"
                       />
                       <div className="flex justify-end gap-2">
                         <button
@@ -263,7 +263,7 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
                         </button>
                         <button
                           onClick={submitNegativeFeedback}
-                          className="px-3 py-1.5 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium"
+                          className="px-3 py-1.5 text-xs bg-rose-600 hover:bg-rose-700 text-white rounded-md font-medium"
                         >
                           Gửi
                         </button>
@@ -298,7 +298,7 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
           >
             <div className="px-6 py-4 border-b border-gray-100 dark:border-white/10 flex justify-between items-center bg-gray-50/80 dark:bg-[#171717]/60">
               <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <BookOpen className="w-5 h-5 text-rose-600 dark:text-rose-300" />
                 Trích dẫn pháp lý
               </h3>
               <button
@@ -313,7 +313,7 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
 
             <div className="p-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
               <div className="mb-4">
-                <div className="inline-block px-3 py-1 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20 rounded-full text-xs font-semibold mb-3">
+                <div className="inline-block px-3 py-1 bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-100 dark:border-rose-500/20 rounded-full text-xs font-semibold mb-3">
                   {selectedCitation.metadata?.source || 'Tài liệu pháp lý'}
                 </div>
                 {(selectedCitation.metadata?.dieu || selectedCitation.metadata?.khoan) && (
@@ -333,7 +333,7 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
             <div className="px-6 py-4 border-t border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-[#171717]/60 flex justify-end">
               <button
                 onClick={() => setSelectedCitation(null)}
-                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
+                className="px-5 py-2 bg-rose-600 hover:bg-rose-700 dark:bg-rose-600 dark:hover:bg-rose-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
               >
                 Đóng
               </button>

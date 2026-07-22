@@ -64,8 +64,8 @@ export default function AnalyticsTab() {
           <p className="text-sm font-medium text-rose-600 dark:text-rose-400 mb-1">Tổng lượt hội thoại</p>
           <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats?.total_interactions || 0}</p>
         </div>
-        <div className="p-5 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl border border-indigo-100 dark:border-indigo-500/20">
-          <p className="text-sm font-medium text-indigo-600 dark:text-indigo-400 mb-1">Hôm nay</p>
+        <div className="p-5 bg-rose-50/70 dark:bg-rose-500/10 rounded-xl border border-rose-100 dark:border-rose-500/20">
+          <p className="text-sm font-medium text-rose-600 dark:text-rose-300 mb-1">Hôm nay</p>
           <p className="text-3xl font-bold text-gray-900 dark:text-white">
             {stats?.by_date?.[new Date().toISOString().split('T')[0]] || 0}
           </p>
@@ -100,8 +100,8 @@ export default function AnalyticsTab() {
                   </div>
                   
                   <div className="flex gap-3">
-                    <div className="w-6 h-6 rounded bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
-                      <Bot className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                    <div className="w-6 h-6 rounded bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center shrink-0">
+                      <Bot className="w-3.5 h-3.5 text-rose-600 dark:text-rose-300" />
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-3">
                       {log.ai_response}

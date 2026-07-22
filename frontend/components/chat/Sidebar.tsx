@@ -58,14 +58,14 @@ export function Sidebar({
       <div className="h-14 flex items-center justify-between px-4 mt-1 flex-shrink-0">
         <div className="flex items-center gap-2.5">
           <div
-            className="w-8 h-8 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20"
-            style={{ background: 'linear-gradient(135deg, #2563EB, #1D4ED8)' }}
+            className="w-8 h-8 rounded-xl flex items-center justify-center shadow-lg shadow-rose-500/20"
+            style={{ background: 'linear-gradient(135deg, #F43F5E, #BE123C)' }}
           >
             <Scale className="w-4 h-4 text-white" />
           </div>
           <div>
             <span className="text-sm font-bold text-gray-800 dark:text-white tracking-tight">VietLaw AI</span>
-            <span className="block text-[9px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-widest leading-none mt-0.5">Trợ lý pháp luật</span>
+            <span className="block text-[9px] font-medium text-rose-600 dark:text-rose-300 uppercase tracking-widest leading-none mt-0.5">Trợ lý pháp luật</span>
           </div>
         </div>
         <button
@@ -81,7 +81,7 @@ export function Sidebar({
       <div className="px-3 py-2 flex-shrink-0 space-y-2">
         <button
           onClick={onNewChat}
-          className="w-full flex items-center justify-center gap-2 rounded-xl py-2.5 px-3 transition-all duration-200 border border-blue-500/25 bg-blue-50/60 dark:bg-[rgba(37,99,235,0.07)] text-blue-600 dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-100 hover:border-blue-400 dark:hover:border-blue-400/50 hover:bg-blue-100 dark:hover:bg-blue-500/10 active:scale-98"
+          className="w-full flex items-center justify-center gap-2 rounded-xl py-2.5 px-3 transition-all duration-200 border border-rose-300/60 bg-rose-50/70 dark:bg-rose-500/10 text-rose-700 dark:text-rose-200 hover:text-rose-800 dark:hover:text-rose-100 hover:border-rose-300 dark:hover:border-rose-400/40 hover:bg-rose-100/70 dark:hover:bg-rose-500/15 active:scale-98"
         >
           <Plus className="w-4 h-4" />
           <span className="text-[13px] font-semibold">Đoạn chat mới</span>
@@ -110,7 +110,7 @@ export function Sidebar({
             placeholder="Tìm kiếm đoạn chat..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-2 pl-9 pr-3 text-[12.5px] text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-400 dark:focus:border-blue-500/50 focus:bg-white dark:focus:bg-white/10 transition-all"
+            className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-2 pl-9 pr-3 text-[12.5px] text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-rose-300 dark:focus:border-rose-500/50 focus:bg-white dark:focus:bg-white/10 transition-all"
           />
         </div>
       </div>
@@ -157,11 +157,11 @@ export function Sidebar({
                     >
                       <MessageSquare
                         className={`w-3.5 h-3.5 mr-2.5 flex-shrink-0 transition-colors ${
-                          isActive ? 'text-blue-500 dark:text-blue-400' : 'text-gray-400 dark:text-gray-600 group-hover:text-gray-600 dark:group-hover:text-gray-400'
+                          isActive ? 'text-rose-500 dark:text-rose-300' : 'text-gray-400 dark:text-gray-600 group-hover:text-gray-600 dark:group-hover:text-gray-400'
                         }`}
                       />
                       <div className="flex-1 truncate pr-6">
-                        <span className={`text-[12.5px] font-medium block truncate ${isActive ? 'text-blue-700 dark:text-white' : ''}`}>
+                        <span className={`text-[12.5px] font-medium block truncate ${isActive ? 'text-rose-700 dark:text-white' : ''}`}>
                           {session.title}
                         </span>
                       </div>
@@ -191,7 +191,7 @@ export function Sidebar({
         </p>
         <button
           onClick={() => setTheme(currentTheme === 'dark' ? 'light' : 'dark')}
-          className="p-1.5 rounded-lg text-gray-500 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-500/10 transition-all"
+          className="p-1.5 rounded-lg text-gray-500 dark:text-gray-500 hover:text-rose-600 dark:hover:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-500/10 transition-all"
           title="Chuyển chế độ giao diện"
         >
           {currentTheme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}

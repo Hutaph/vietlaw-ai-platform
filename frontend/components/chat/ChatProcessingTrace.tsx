@@ -51,7 +51,7 @@ function getSummary(stage: ChatProcessingStage): string {
 function StatusIcon({ stage }: { stage: ChatProcessingStage }) {
   if (stage === 'completed') return <Check className="h-4 w-4 text-emerald-600" />;
   if (stage === 'cancelled' || stage === 'error') return <XCircle className="h-4 w-4 text-slate-500" />;
-  return <Loader2 className="h-4 w-4 animate-spin text-blue-600 motion-reduce:animate-none" aria-hidden="true" />;
+  return <Loader2 className="h-4 w-4 animate-spin text-rose-600 motion-reduce:animate-none" aria-hidden="true" />;
 }
 
 export function ChatProcessingTrace({
@@ -81,7 +81,7 @@ export function ChatProcessingTrace({
             <button
               type="button"
               onClick={onToggleCollapsed}
-              className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-blue-700 transition hover:bg-blue-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 dark:text-blue-300 dark:hover:bg-blue-500/20"
+              className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-rose-700 transition hover:bg-rose-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 dark:text-rose-300 dark:hover:bg-rose-500/20"
               aria-expanded="false"
               aria-controls={detailsId}
             >
@@ -96,7 +96,7 @@ export function ChatProcessingTrace({
 
   return (
     <section
-      className="mt-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-4 shadow-sm dark:border-blue-500/20 dark:bg-blue-500/10"
+      className="mt-3 rounded-2xl border border-rose-100 bg-rose-50/60 p-4 shadow-sm dark:border-rose-500/20 dark:bg-rose-500/10"
       aria-live="polite"
       aria-label="Tiến trình xử lý"
       id={detailsId}
@@ -116,7 +116,7 @@ export function ChatProcessingTrace({
           <button
             type="button"
             onClick={onToggleCollapsed}
-            className="shrink-0 rounded-lg px-2 py-1 text-xs font-semibold text-blue-700 transition hover:bg-blue-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 dark:text-blue-300 dark:hover:bg-blue-500/20"
+            className="shrink-0 rounded-lg px-2 py-1 text-xs font-semibold text-rose-700 transition hover:bg-rose-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 dark:text-rose-300 dark:hover:bg-rose-500/20"
             aria-expanded="true"
             aria-controls={detailsId}
           >
@@ -136,13 +136,13 @@ export function ChatProcessingTrace({
                   complete
                     ? 'border-emerald-500 bg-emerald-500 text-white'
                     : active
-                      ? 'border-blue-500 bg-white text-blue-600 dark:bg-slate-950'
+                      ? 'border-rose-500 bg-white text-rose-600 dark:bg-slate-950'
                       : 'border-slate-300 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-950'
                 }`}
               >
                 {complete ? <Check className="h-3 w-3" /> : active ? <Loader2 className="h-3 w-3 animate-spin motion-reduce:animate-none" /> : <Circle className="h-2 w-2 fill-current" />}
               </span>
-              <span className={`${complete ? 'text-slate-700 dark:text-slate-200' : active ? 'font-semibold text-blue-800 dark:text-blue-200' : 'text-slate-500 dark:text-slate-400'}`}>
+              <span className={`${complete ? 'text-slate-700 dark:text-slate-200' : active ? 'font-semibold text-rose-800 dark:text-rose-200' : 'text-slate-500 dark:text-slate-400'}`}>
                 {complete ? step.doneLabel : active ? step.activeLabel : step.label}
               </span>
             </li>

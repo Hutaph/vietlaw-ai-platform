@@ -28,7 +28,7 @@ export function AdvancedSettings({ config, setConfig }: AdvancedSettingsProps) {
         className="flex items-center justify-center rounded-xl border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800 px-3 py-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-slate-700 active:bg-gray-200 dark:active:bg-slate-600"
       >
         <span className="text-[12px] font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose-600">
             <line x1="4" y1="21" x2="4" y2="14"></line>
             <line x1="4" y1="10" x2="4" y2="3"></line>
             <line x1="12" y1="21" x2="12" y2="12"></line>
@@ -60,7 +60,7 @@ export function AdvancedSettings({ config, setConfig }: AdvancedSettingsProps) {
                 min="0" max="1" step="0.05"
                 value={config.temperature}
                 onChange={(e) => setConfig({ ...config, temperature: parseFloat(e.target.value) })}
-                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-emerald-500"
+                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-rose-600"
               />
               <p className="text-[10px] text-gray-400">Điều chỉnh độ sáng tạo của câu trả lời.</p>
             </div>
@@ -75,7 +75,7 @@ export function AdvancedSettings({ config, setConfig }: AdvancedSettingsProps) {
                 min="100" max="4000" step="100"
                 value={config.maxTokens}
                 onChange={(e) => setConfig({ ...config, maxTokens: parseInt(e.target.value) })}
-                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-emerald-500"
+                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-rose-600"
               />
               <p className="text-[10px] text-gray-400">Giới hạn độ dài tối đa của câu trả lời.</p>
             </div>
@@ -90,7 +90,7 @@ export function AdvancedSettings({ config, setConfig }: AdvancedSettingsProps) {
                 min="1" max="20" step="1"
                 value={config.topK}
                 onChange={(e) => setConfig({ ...config, topK: parseInt(e.target.value) })}
-                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-emerald-500"
+                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-rose-600"
               />
               <p className="text-[10px] text-gray-400">Số điều khoản tối đa đưa vào câu trả lời.</p>
             </div>
@@ -99,7 +99,7 @@ export function AdvancedSettings({ config, setConfig }: AdvancedSettingsProps) {
             <Link
               href="/admin#settings"
               onClick={() => setIsOpen(false)}
-              className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+              className="text-[11px] font-semibold text-rose-600 dark:text-rose-300 hover:text-rose-700 dark:hover:text-rose-200"
             >
               Mở cấu hình đầy đủ →
             </Link>
