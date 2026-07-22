@@ -1,6 +1,6 @@
 """
-API Router cho endpoint /chat và /chat/stream.
-Tách từ main.py gốc — chỉ chứa logic xử lý request/response.
+API router for /chat and /chat/stream.
+Contains request/response orchestration for chat endpoints.
 """
 import re
 import json
@@ -38,13 +38,13 @@ _CJK_PATTERN = re.compile(r'[\u4e00-\u9fff\uac00-\ud7af\u3040-\u30ff]')
 
 
 def _clean_chunk(text: str) -> str:
-    """Loai bo ky tu CJK va khoang trang thua."""
+    """Remove CJK characters and repeated spaces."""
     text = _CJK_PATTERN.sub('', text)
     return re.sub(r' +', ' ', text)
 
 
 def _sse(data: dict) -> str:
-    """Dinh dang mot dong Server-Sent Event."""
+    """Format one Server-Sent Event line."""
     return f"data: {json.dumps(data, ensure_ascii=False)}\n\n"
 
 
@@ -163,7 +163,7 @@ async def chat_endpoint(request: ChatRequest, http_request: Request):
         if summary:
             history_lines.append(f"=== BỐI CẢNH TRƯỚC ĐÓ ===\n{summary}\n\n=== HỘI THOẠI GẦN NHẤT ===")
             
-        for msg in _recent_messages(request): # Chỉ lấy 4 tin nhắn gần nhất
+        for msg in _recent_messages(request): # Keep the last four messages.
             role_name = "USER" if msg.role == "user" else "AI"
             history_lines.append(f"{role_name}: {msg.content}")
             
@@ -173,14 +173,14 @@ async def chat_endpoint(request: ChatRequest, http_request: Request):
         
         from app.services.pipeline import _get_embedding
         
-        # Lịch sử ngắn gọn cho rewriter (sliding window: 2 turns = 4 messages)
+        # Short sliding-window history for the rewriter: two turns, four messages.
         recent_history_lines = []
-        for msg in _recent_messages(request): # Lấy tối đa 4 tin nhắn gần nhất
+        for msg in _recent_messages(request): # Keep up to four recent messages.
             role_name = "USER" if msg.role == "user" else "AI"
             recent_history_lines.append(f"{role_name}: {msg.content}")
         recent_history_str = "\n".join(recent_history_lines) if request.useHistoryForRewriter else ""
         
-        # Gọi rewriter trước để lấy rewritten query
+        # Run the rewriter first so retrieval uses the rewritten query.
         if request.enableQueryRewriter:
             domain, queries = await asyncio.to_thread(
                 _rewrite_query,
@@ -207,10 +207,10 @@ async def chat_endpoint(request: ChatRequest, http_request: Request):
                 embedding = _get_embedding(embedding_api_key)
                 if embedding:
                     try:
-                        # Sinh embedding cho câu hỏi đã được viết lại
+                        # Embed the rewritten query before checking semantic cache.
                         query_vector = await asyncio.to_thread(embedding.embed_query, rewritten_query)
                         
-                        # Kiểm tra cache
+                        # Check semantic cache.
                         from app.services.semantic_cache import check_cache
                         cached_response = await asyncio.to_thread(check_cache, query_vector, request.cacheThreshold)
                         if cached_response:
@@ -595,29 +595,29 @@ async def chat_stream_endpoint(request: ChatRequest, http_request: Request):
 
 @router.get("/chat/sessions")
 async def get_sessions():
+    """Return all persisted chat sessions."""
     if CHAT_STORAGE_MODE == "browser":
         return {"storageMode": "browser", "sessions": []}
-    """Trả về danh sách tất cả sessions từ PostgreSQL."""
     from app.services.storage import list_sessions
     return list_sessions()
 
 
 @router.get("/chat/session/{session_id}/messages")
 async def get_session_messages(session_id: str):
+    """Return all persisted messages for one session."""
     if CHAT_STORAGE_MODE == "browser":
         return {"storageMode": "browser", "messages": []}
-    """Trả về tất cả tin nhắn của một session từ PostgreSQL."""
     from app.services.storage import get_session_messages
     return get_session_messages(session_id)
 
 
 @router.delete("/chat/session/{session_id}")
 async def delete_session(session_id: str):
+    """Delete one persisted chat session."""
     if not session_id or session_id == "unknown":
         raise HTTPException(status_code=400, detail="Invalid session_id")
     if CHAT_STORAGE_MODE == "browser":
         return {"status": "skipped", "storageMode": "browser"}
-    """Xóa lịch sử trò chuyện của một session cụ thể khỏi hệ thống."""
     if not session_id or session_id == "unknown":
         raise HTTPException(status_code=400, detail="Invalid session_id")
     

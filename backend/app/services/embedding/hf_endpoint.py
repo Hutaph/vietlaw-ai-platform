@@ -198,7 +198,7 @@ class HuggingFaceEndpointEmbedding:
         return self._validate_vectors(vectors, len(texts))
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
-        """Nhúng nhiều văn bản cùng lúc."""
+        """Embed multiple documents at once."""
         if self._mode == "local":
             return self._embed_local(texts)
 
@@ -209,7 +209,7 @@ class HuggingFaceEndpointEmbedding:
             _raise_huggingface_error(exc)
 
     def embed_query(self, text: str) -> List[float]:
-        """Nhúng một câu truy vấn."""
+        """Embed one query."""
         if self._mode == "local":
             vectors = self._embed_local([text])
             return vectors[0]

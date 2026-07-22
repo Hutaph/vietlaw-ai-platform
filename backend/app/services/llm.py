@@ -1,6 +1,6 @@
 """
-Quản lý kết nối LLM và System Prompt.
-Tách từ main.py gốc — chỉ chứa logic liên quan đến LLM.
+LLM connection helpers and chat prompt definition.
+This module contains provider routing and prompt assembly.
 """
 import logging
 from langchain_core.output_parsers import StrOutputParser
@@ -187,7 +187,7 @@ def _legacy_get_llm(
     max_tokens: int | None = None,
     timeout: float | None = None,
 ):
-    """Khởi tạo kết nối với mô hình ngôn ngữ lớn (LLM) với cơ chế Hybrid Inference Fallback."""
+    """Initialize the legacy LLM connection with hybrid fallback behavior."""
     if not HUGGINGFACE_API_KEY:
         logger.warning("Không tìm thấy HUGGINGFACE_API_KEY. Remote LLM sẽ không hoạt động.")
 
@@ -211,7 +211,7 @@ def _legacy_get_llm(
         actual_model = model_name
         local_model_name = model_name
 
-    # 1. Khởi tạo Remote LLM
+    # 1. Initialize the remote LLM.
     remote_llm = ChatOpenAI(
         model=actual_model,
         api_key=HUGGINGFACE_API_KEY or "dummy_key",
@@ -222,7 +222,7 @@ def _legacy_get_llm(
     )
 
     if INFERENCE_STRATEGY == "local_first":
-        # 2. Khoi tao Local LLM chi khi local_first.
+        # 2. Initialize the local LLM only when local_first is active.
         local_llm = ChatOpenAI(
             model=local_model_name,
             api_key="ollama",
@@ -239,7 +239,7 @@ def _legacy_get_llm(
         return remote_llm
 
 
-# --- CẤU TRÚC SYSTEM PROMPT ---
+# --- System prompt definition ---
 def get_llm(
     model_name: str,
     temperature: float | None = None,
@@ -248,7 +248,7 @@ def get_llm(
     runtime_config=None,
     role: str = ANSWER_ROLE,
 ):
-    """Khá»Ÿi táº¡o LLM vá»›i fallback HuggingFace/Ollama vÃ  Google AI Studio tÃ¹y chá»n."""
+    """Initialize an LLM with configured provider fallbacks."""
     if model_name.strip().lower().startswith("gemini-") and not is_supported_model(GOOGLE_PROVIDER, model_name):
         supported = ", ".join(sorted(PROVIDER_REGISTRY[GOOGLE_PROVIDER].models))
         raise ValueError(
@@ -257,7 +257,7 @@ def get_llm(
 
     selected_google_model = is_google_chat_model(model_name)
     if not HUGGINGFACE_API_KEY and not selected_google_model:
-        logger.warning("KhÃ´ng tÃ¬m tháº¥y HUGGINGFACE_API_KEY. Remote LLM sáº½ khÃ´ng hoáº¡t Ä‘á»™ng.")
+        logger.warning("HUGGINGFACE_API_KEY is not configured; remote Hugging Face LLM will be unavailable.")
 
     final_temperature = temperature if temperature is not None else LLM_TEMPERATURE
     final_max_tokens = max_tokens if max_tokens is not None else LLM_MAX_NEW_TOKENS
@@ -334,7 +334,7 @@ def get_llm(
         _append_unique_llm(entries, "google", GOOGLE_FALLBACK_MODEL, google_fallback_llm)
 
     if not entries:
-        raise RuntimeError("KhÃ´ng cÃ³ LLM provider nÃ o kháº£ dá»¥ng. HÃ£y kiá»ƒm tra cáº¥u hÃ¬nh provider vÃ  API key.")
+        raise RuntimeError("No LLM provider is available. Check provider configuration and API keys.")
 
     _primary_key, primary_llm = entries[0]
     fallbacks = [llm for _, llm in entries[1:]]
@@ -374,5 +374,5 @@ CÁC QUY TẮC BẮT BUỘC:
 
 
 def get_output_parser() -> StrOutputParser:
-    """Trả về output parser cho LLM chain."""
+    """Return the output parser for the LLM chain."""
     return StrOutputParser()

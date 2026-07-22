@@ -1,6 +1,6 @@
 """
-Pydantic models cho API request/response.
-Tách riêng để dễ tái sử dụng và test.
+Pydantic models for API request and response payloads.
+Kept separate for reuse and easier testing.
 """
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -15,7 +15,7 @@ from app.services.provider_registry import (
 
 
 class Message(BaseModel):
-    """Một tin nhắn trong lịch sử chat."""
+    """One message in the chat history."""
     role: str
     content: str
 
@@ -83,7 +83,7 @@ class RuntimeInferenceRoles(BaseModel):
 
 
 class RuntimeInferenceConfig(BaseModel):
-    """Browser-local BYOK inference config sent with each chat request."""
+    """Runtime inference settings sent with each chat request."""
 
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -96,7 +96,7 @@ class RuntimeInferenceConfig(BaseModel):
 
 
 class ChatRequest(BaseModel):
-    """Dữ liệu gửi lên từ Frontend khi user đặt câu hỏi."""
+    """Payload sent by the frontend when the user asks a question."""
     model_config = ConfigDict(populate_by_name=True)
 
     messages: List[Message]
@@ -104,7 +104,7 @@ class ChatRequest(BaseModel):
     sessionId: Optional[str] = "unknown"
     sessionTitle: Optional[str] = "Cuộc trò chuyện mới"
     messageId: Optional[str] = None
-    category: str = "all"  # Lĩnh vực pháp luật để lọc tài liệu
+    category: str = "all"  # Legal category filter.
     temperature: Optional[float] = None
     maxTokens: Optional[int] = None
     topK: Optional[int] = Field(default=5, ge=1, le=20)
@@ -132,6 +132,6 @@ class ChatRequest(BaseModel):
 
 
 class ChatResponse(BaseModel):
-    """Dữ liệu trả về cho Frontend sau khi LLM trả lời."""
+    """Response returned to the frontend after the LLM answers."""
     text: str
     contextUsed: List[Dict[str, Any]]

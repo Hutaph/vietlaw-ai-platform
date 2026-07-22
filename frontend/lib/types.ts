@@ -1,6 +1,6 @@
 /**
- * Shared TypeScript interfaces cho toàn bộ frontend.
- * Tách từ các component để tránh circular imports và dễ tái sử dụng.
+ * Shared TypeScript interfaces for the frontend.
+ * Kept outside components to avoid circular imports and improve reuse.
  */
 
 // --- Chat Message ---

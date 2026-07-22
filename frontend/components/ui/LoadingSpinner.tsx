@@ -1,6 +1,6 @@
 /**
- * Loading spinner component — hiển thị khi đang chờ LLM trả lời.
- * Tách từ ChatInterface.tsx để tái sử dụng.
+ * Loading spinner displayed while the LLM is generating a response.
+ * Extracted from ChatInterface.tsx for reuse.
  */
 import React from 'react';
 import { Scale } from 'lucide-react';

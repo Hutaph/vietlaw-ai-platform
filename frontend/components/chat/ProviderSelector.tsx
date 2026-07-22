@@ -15,7 +15,7 @@ export function ProviderSelector({ model, setModel }: ModelSelectorProps) {
   const selectedModel = AI_MODELS.find(m => m.id === model) || AI_MODELS[0];
   const selectedProvider = AI_PROVIDERS.find(provider => provider.id === selectedModel.provider);
 
-  // Dùng hook tái sử dụng thay vì duplicate useEffect
+  // Reuse the shared outside-click hook for dropdown dismissal.
   useClickOutside(dropdownRef, useCallback(() => setIsOpen(false), []));
 
   return (
@@ -34,7 +34,7 @@ export function ProviderSelector({ model, setModel }: ModelSelectorProps) {
         </div>
       </button>
 
-      {/* Menu thả xuống */}
+      {/* Dropdown menu */}
       {isOpen && (
         <div className="absolute bottom-full mb-2 left-0 md:left-auto md:right-0 w-48 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-xl shadow-gray-200/50 dark:shadow-none rounded-xl py-1 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
           <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 border-b border-gray-50 dark:border-slate-800 mb-1">

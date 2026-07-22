@@ -1,6 +1,6 @@
 """
-Quản lý Vector Store (FAISS), Knowledge Base, và quy trình Embedding.
-Tách từ rag_service.py gốc — chỉ chứa logic liên quan đến dữ liệu và vector.
+Legacy FAISS vector store helpers.
+Kept for local fallback paths and compatibility with older scripts.
 """
 import os
 import json
@@ -27,7 +27,7 @@ from app.utils.logging import setup_logger
 
 logger = setup_logger("vietlaw.vectorstore")
 
-# --- BIẾN TOÀN CỤC ---
+# --- Module-level state ---
 vectorstore: Optional[FAISS] = None
 embeddings = None
 KNOWLEDGE_BASE: Dict[str, Any] = {}
@@ -42,7 +42,7 @@ def _get_embeddings():
 
 
 def load_knowledge_base_to_ram() -> None:
-    """Nạp corpus vào RAM bằng loader chuẩn của backend."""
+    """Load the corpus into RAM through the canonical backend loader."""
     global KNOWLEDGE_BASE, LAW_METADATA
     load_knowledge_base()
     KNOWLEDGE_BASE = CANONICAL_KNOWLEDGE_BASE
@@ -51,7 +51,7 @@ def load_knowledge_base_to_ram() -> None:
 
 
 def get_processed_files() -> List[str]:
-    """Đọc danh sách các file đã được embedding thành công trước đó."""
+    """Read the list of files that have already been embedded."""
     if os.path.exists(TRACKING_FILE):
         with open(TRACKING_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -59,7 +59,7 @@ def get_processed_files() -> List[str]:
 
 
 def mark_file_as_processed(filename: str) -> None:
-    """Đánh dấu file đã xử lý xong để những lần chạy sau hệ thống sẽ bỏ qua."""
+    """Mark a file as processed so future runs can skip it."""
     processed = get_processed_files()
     if filename not in processed:
         processed.append(filename)
@@ -68,7 +68,7 @@ def mark_file_as_processed(filename: str) -> None:
 
 
 def _embed_single_file(file_path: str) -> None:
-    """Nhúng (embedding) một file JSON vào FAISS index."""
+    """Embed one JSON file into the FAISS index."""
     global vectorstore
 
     filename = os.path.basename(file_path)
@@ -82,7 +82,7 @@ def _embed_single_file(file_path: str) -> None:
         law_id = data.get("law_info", {}).get("law_id")
         category = determine_category(data.get("law_info", {}).get("law_name", ""))
 
-        # Đóng gói từng điều khoản thành Document
+        # Wrap each clause as a LangChain document.
         for clause in data.get("clauses", []):
             metadata = {
                 "id": clause["id"],
@@ -100,7 +100,7 @@ def _embed_single_file(file_path: str) -> None:
 
         for attempt in range(EMBEDDING_MAX_RETRIES):
             try:
-                # Nếu vectorstore chưa có, tạo mới. Nếu có rồi thì thêm vào.
+                # Create the vector store on the first batch, then append later batches.
                 if vectorstore is None:
                     vectorstore = FAISS.from_documents(
                         batch, _get_embeddings(),
@@ -110,7 +110,7 @@ def _embed_single_file(file_path: str) -> None:
                     vectorstore.add_documents(batch)
 
                 time.sleep(EMBEDDING_SLEEP_BETWEEN_BATCHES)
-                break  # Thành công thì thoát retry
+                break  # Success: leave the retry loop.
 
             except Exception as e:
                 logger.warning(
@@ -127,17 +127,17 @@ def _embed_single_file(file_path: str) -> None:
 
     vectorstore.save_local(FAISS_INDEX_PATH)
     mark_file_as_processed(filename)
-    logger.info("ĐÃ HOÀN THÀNH VÀ LƯU FILE: %s", filename)
+    logger.info("Finished embedding and saved file: %s", filename)
 
 
 def init_vector_db() -> None:
-    """Hàm khởi tạo và cập nhật cơ sở dữ liệu vector (FAISS)."""
+    """Initialize the FAISS vector database."""
     global vectorstore
 
-    # 1. Nạp dữ liệu vào RAM trước để sẵn sàng phục vụ
+    # 1. Load data into RAM before serving.
     load_knowledge_base_to_ram()
 
-    # Tải index cũ nếu đã có
+    # Load an existing index when available.
     if os.path.exists(FAISS_INDEX_PATH):
         logger.info("Đang tải FAISS Index từ ổ cứng...")
         vectorstore = FAISS.load_local(
@@ -154,7 +154,7 @@ def init_vector_db() -> None:
 
 
 def get_vectorstore() -> Optional[FAISS]:
-    """Trả về vectorstore hiện tại. Khởi tạo nếu chưa có."""
+    """Return the current vector store, initializing it if needed."""
     global vectorstore
     if vectorstore is None:
         init_vector_db()

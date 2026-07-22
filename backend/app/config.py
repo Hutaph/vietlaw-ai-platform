@@ -1,13 +1,13 @@
 """
-Quản lý cấu hình tập trung cho backend.
-Tất cả đường dẫn, hằng số, và biến môi trường được khai báo tại đây.
+Centralized backend configuration.
+Paths, runtime constants, and environment variables are declared here.
 """
 import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# --- NẠP BIẾN MÔI TRƯỜNG ---
-# Tìm file .env ở thư mục root project (2 cấp trên app/)
+# --- ENVIRONMENT LOADING ---
+# Locate the project-root .env file two levels above app/.
 _current_dir = Path(__file__).resolve().parent
 _backend_dir = _current_dir.parent
 _env_path = _backend_dir.parent / ".env"
@@ -15,8 +15,8 @@ _env_path = _backend_dir.parent / ".env"
 if _env_path.exists():
     load_dotenv(dotenv_path=_env_path)
 
-# --- ĐƯỜNG DẪN DỮ LIỆU ---
-# Sử dụng đường dẫn tuyệt đối tính từ thư mục backend/
+# --- DATA PATHS ---
+# Resolve paths from the backend directory.
 EMBEDDING_PROVIDER = os.getenv("EMBEDDING_PROVIDER", "huggingface").strip().lower()
 _embedding_artifact_suffix = (
     "" if EMBEDDING_PROVIDER == "huggingface" else f"_{EMBEDDING_PROVIDER}"
@@ -96,7 +96,7 @@ _default_embedding_model = (
     else DEFAULT_LOCAL_EMBEDDING_MODEL
 )
 EMBEDDING_MODEL = os.getenv("HUGGINGFACE_EMBEDDING_MODEL", _default_embedding_model)
-# Hỗ trợ "api" hoặc "local"
+# Supported values: "api" or "local".
 EMBEDDING_DEVICE = os.getenv("EMBEDDING_DEVICE", "cpu").strip()
 EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "1024"))
 EMBEDDING_NORMALIZE = os.getenv("EMBEDDING_NORMALIZE", "true").strip().lower() == "true"
@@ -141,18 +141,19 @@ GOOGLE_OPENAI_BASE_URL = os.getenv(
 CORS_ORIGINS = ["*"]
 
 # ---------------------------------------------------------------------------
-# PIPELINE CONFIG — Thay đổi ở đây để chạy ablation study
+# PIPELINE CONFIG
 # ---------------------------------------------------------------------------
-# Mỗi key chọn strategy tương ứng. Xem danh sách strategy ở từng module.
+# Each key selects the corresponding strategy. See each module for the
+# supported strategy list.
 #
-# Ví dụ ablation experiments:
+# Example ablation experiments:
 #   Baseline:  search="faiss",  reranking="none"
 #   +Reranker: search="faiss",  reranking="cross_encoder"
 #   Hybrid:    search="hybrid", reranking="none"
 #   Full:      search="hybrid", reranking="cross_encoder"
 # ---------------------------------------------------------------------------
 PIPELINE_CONFIG = {
-    # Chunking: "clause" (mỗi khoản = 1 chunk)
+    # Chunking: "clause" (one legal clause per chunk).
     "chunking": os.getenv("PIPELINE_CHUNKING", "clause"),
 
     # Search: "faiss" | "bm25" | "hybrid"
@@ -167,11 +168,11 @@ PIPELINE_CONFIG = {
     # Context builder: "nested"
     "context_builder": os.getenv("PIPELINE_CONTEXT_BUILDER", "nested"),
 
-    # --- Hybrid search weights (chỉ dùng khi search="hybrid") ---
+    # --- Hybrid search weights, used only when search="hybrid". ---
     "hybrid_vector_weight": float(os.getenv("HYBRID_VECTOR_WEIGHT", "0.5")),
     "hybrid_bm25_weight": float(os.getenv("HYBRID_BM25_WEIGHT", "0.5")),
 
-    # --- Reranker model (chỉ dùng khi reranking="cross_encoder") ---
+    # --- Reranker model, used only when reranking="cross_encoder". ---
     "reranker_model": os.getenv("RERANKER_MODEL", DEFAULT_LOCAL_RERANKER_MODEL),
     "reranker_max_candidates": int(os.getenv("RERANKER_MAX_CANDIDATES", "10")),
     "reranker_device": os.getenv("RERANKER_DEVICE", "cpu").strip(),

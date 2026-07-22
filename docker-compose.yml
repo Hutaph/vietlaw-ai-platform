@@ -55,7 +55,7 @@ services:
       - ./backend/embedded_files.json:/app/embedded_files.json
       - ./corpus:/corpus:ro
       - ./models:/models:ro
-      # Ánh xạ thư mục cache của HuggingFace ra ngoài để không phải tải lại model
+      # Persist the Hugging Face cache so local models are not downloaded repeatedly.
       - hf_cache:/root/.cache/huggingface
 
   frontend:

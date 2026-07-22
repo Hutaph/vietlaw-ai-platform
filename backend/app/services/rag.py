@@ -1,6 +1,6 @@
 """
-RAG Pipeline: Retrieval và Context Building.
-Tách từ rag_service.py gốc — chỉ chứa logic retrieval và xây dựng context.
+Legacy RAG helpers for retrieval and context building.
+Kept for compatibility with older code paths.
 """
 from typing import List, Dict, Any
 
@@ -19,7 +19,7 @@ from app.services.knowledge_base import (
 
 
 def resolve_reference_data(target_id: str) -> List[Dict[str, Any]]:
-    """Hàm phụ trợ để tìm chính xác Khoản hoặc gom tất cả các Khoản của một Điều."""
+    """Resolve an exact clause or collect all clauses under an article."""
     if target_id in KNOWLEDGE_BASE:
         return [KNOWLEDGE_BASE[target_id]]
 
@@ -32,7 +32,7 @@ def resolve_reference_data(target_id: str) -> List[Dict[str, Any]]:
 
 
 def get_retriever(category: str = ALL_LAWS_CATEGORY) -> Any:
-    """Tạo retriever để tìm kiếm các đoạn văn bản pháp luật liên quan."""
+    """Create a retriever for relevant legal text chunks."""
     vectorstore = get_vectorstore()
 
     search_kwargs = {
@@ -41,7 +41,7 @@ def get_retriever(category: str = ALL_LAWS_CATEGORY) -> Any:
         "lambda_mult": RETRIEVER_LAMBDA_MULT,
     }
 
-    # Lọc theo chuyên ngành luật nếu có yêu cầu
+    # Apply a legal category filter when requested.
     normalized_category = normalize_category(category)
     if normalized_category != ALL_LAWS_CATEGORY:
         search_kwargs["filter"] = (
@@ -58,7 +58,7 @@ def get_retriever(category: str = ALL_LAWS_CATEGORY) -> Any:
 
 
 def build_nested_context(retrieved_docs: List[Document]) -> str:
-    """Xây dựng chuỗi ngữ cảnh đệ quy 2 Cấp (Cấp 1: Full nội dung, Cấp 2: Tóm tắt)."""
+    """Build a two-level context string with direct content and summaries."""
     context_blocks = []
     used_law_ids = set()
 
@@ -83,7 +83,7 @@ def build_nested_context(retrieved_docs: List[Document]) -> str:
         chapter_str = f"Chương {chapter_val} ({chapter_title})" if chapter_title else f"Chương {chapter_val}"
         article_str = f"Điều {article_val} ({article_title})" if article_title else f"Điều {article_val}"
 
-        # [0] CĂN CỨ CHÍNH
+        # [0] Main legal basis.
         block = f"[CĂN CỨ ID: {clause_id}]\n"
         block += f"- Nguồn: {law_name} | {chapter_str} | {article_str} | Khoản {clause_val}\n"
         block += f"- Nội dung: \"{clause_data['content']}\"\n"
@@ -96,11 +96,11 @@ def build_nested_context(retrieved_docs: List[Document]) -> str:
                 target_id_1 = ref1.get("target_id", "")
                 anchor_text_1 = ref1.get("anchor_text", target_id_1)
 
-                # Tìm dữ liệu của Cấp 1
+                # Resolve level-1 reference data.
                 resolved_clauses_1 = resolve_reference_data(target_id_1)
 
                 if resolved_clauses_1:
-                    # [1] DẪN CHIẾU CẤP 1 (Lấy toàn bộ Content)
+                    # [1] Level-1 reference with full content.
                     content_1 = " ".join([c["content"] for c in resolved_clauses_1])
                     target_law_id_1 = resolved_clauses_1[0]["law_id"]
                     target_law_name_1 = LAW_METADATA[target_law_id_1]["law_name"]
@@ -109,12 +109,12 @@ def build_nested_context(retrieved_docs: List[Document]) -> str:
                     block += f"   + [Cấp 1] Tại cụm từ '{anchor_text_1}' ({target_law_name_1}):\n"
                     block += f"     Nội dung: \"{content_1}\"\n"
 
-                    # [2] DẪN CHIẾU CẤP 2 (Chỉ lấy Tóm tắt)
+                    # [2] Level-2 references with summaries only.
                     refs_level_2 = []
                     for c in resolved_clauses_1:
                         refs_level_2.extend(c.get("cross_references", []))
 
-                    # Lọc trùng lặp và tránh trỏ ngược về chính nó
+                    # Deduplicate and avoid references pointing back to the source.
                     seen_targets = set()
                     unique_refs_level_2 = []
                     for r2 in refs_level_2:
@@ -131,13 +131,13 @@ def build_nested_context(retrieved_docs: List[Document]) -> str:
                             block += f"       -> [Cấp 2] Có liên quan đến '{anchor_text_2}': (Tóm tắt) {summary_text_2}\n"
 
                 else:
-                    # Fallback nếu không quét được trong RAM (Luật đó chưa được Embedding)
+                    # Fallback when the referenced law cannot be resolved in memory.
                     summary_text_1 = ref1.get("description_summary") or ref1.get("description", "")
                     block += f"   + [Cấp 1] Tại cụm từ '{anchor_text_1}': (Tóm tắt) {summary_text_1}\n"
 
         context_blocks.append(block)
 
-    # Tạo phần Header tổng hợp thông tin văn bản
+    # Add a header summarizing all source laws used in this context.
     header = "--- THÔNG TIN CÁC VĂN BẢN ĐƯỢC SỬ DỤNG ---\n"
     for l_id in used_law_ids:
         meta = LAW_METADATA.get(l_id)
@@ -149,7 +149,7 @@ def build_nested_context(retrieved_docs: List[Document]) -> str:
 
 
 def format_docs_for_frontend(docs: List[Document]) -> List[Dict[str, Any]]:
-    """Định dạng lại dữ liệu trả về để Frontend dễ dàng hiển thị lên UI."""
+    """Format retrieved documents for frontend display."""
     formatted = []
     for doc in docs:
         c_id = doc.metadata.get("id")

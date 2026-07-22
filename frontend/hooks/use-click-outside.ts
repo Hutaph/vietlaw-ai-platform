@@ -1,6 +1,6 @@
 /**
- * Hook tái sử dụng để phát hiện click bên ngoài element.
- * Dùng cho cả CategoryDropdown và ProviderSelector.
+ * Reusable hook for detecting clicks outside an element.
+ * Used by dropdown-style controls.
  */
 import { useEffect, type RefObject } from 'react';
 
