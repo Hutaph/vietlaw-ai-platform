@@ -105,7 +105,11 @@ export default function AdminPage() {
                   onSelect={setSelectedDocId}
                 />
                 </div>
-                <div className={`absolute inset-y-0 right-0 z-20 w-full max-w-[400px] border-l border-gray-200 bg-white shadow-2xl transition-transform duration-300 dark:border-slate-800 dark:bg-slate-900 ${selectedDocId ? 'translate-x-0' : 'translate-x-full'}`}>
+                <div className={`absolute inset-y-0 right-0 z-20 w-full max-w-[400px] bg-white transition-transform duration-300 dark:bg-slate-900 ${
+                  selectedDocId
+                    ? 'translate-x-0 border-l border-gray-200 shadow-2xl dark:border-slate-800'
+                    : 'translate-x-full border-l border-transparent shadow-none pointer-events-none'
+                }`}>
                   {selectedDocId && (
                     <ChunkViewer
                       lawId={selectedDocId}
