@@ -1,8 +1,12 @@
-# Contributing Guidelines
+# Hướng dẫn đóng góp
 
-## Commit message convention
+Tài liệu này mô tả quy ước làm việc cho VietLaw AI Platform. Mục tiêu là giữ
+lịch sử thay đổi rõ ràng, review dễ hơn và hạn chế các thay đổi lan rộng ngoài
+phạm vi cần thiết.
 
-All commits must follow the Conventional Commits format in English:
+## Commit message
+
+Commit message dùng chuẩn Conventional Commits và viết bằng tiếng Anh:
 
 - `feat(scope): short summary`
 - `fix(scope): short summary`
@@ -10,41 +14,50 @@ All commits must follow the Conventional Commits format in English:
 - `refactor(scope): short summary`
 - `chore(scope): short summary`
 
-Examples:
+Ví dụ:
+
 - `feat(storage): add database-backed storage bootstrap`
 - `fix(api): handle storage initialization fallback`
-- `docs(openspec): add migration proposal for qdrant and postgres`
+- `docs(readme): translate deployment guide to vietnamese`
 
-## Pull request convention
+## Pull request
 
-Pull requests should be opened with the following structure in English:
+Pull request nên có cấu trúc ngắn gọn, dễ review.
 
-### Title
-`feat(scope): short summary`
+### Tiêu đề
 
-### Description
-- What changed
-- Why it changed
-- How it was verified
-- Any follow-up items
+```text
+feat(scope): short summary
+```
+
+### Mô tả
+
+- Đã thay đổi gì
+- Vì sao cần thay đổi
+- Đã kiểm tra bằng cách nào
+- Có việc nào cần theo dõi tiếp không
 
 ### Checklist
-- [ ] Code compiles or relevant checks passed
-- [ ] Documentation updated where needed
-- [ ] Changes are scoped and reversible
 
-## Documentation convention
+- [ ] Code build được hoặc các kiểm tra liên quan đã chạy
+- [ ] Tài liệu đã được cập nhật nếu hành vi/cấu hình thay đổi
+- [ ] Thay đổi được giới hạn trong phạm vi cần thiết
+- [ ] Không commit secret, file `.env`, model artifact hoặc dữ liệu lớn ngoài ý muốn
 
-All project documentation and developer-facing docs should be written in English.
-This includes:
-- README files
-- OpenSpec proposal/design/spec/task documents
-- inline comments for new developer-facing code where practical
+## Quy ước tài liệu
 
-## Working rules
+- README và tài liệu hướng tới người dùng có thể viết bằng tiếng Việt.
+- Commit message, branch name và PR title nên viết bằng tiếng Anh để dễ tra cứu.
+- Tài liệu kỹ thuật nội bộ có thể dùng tiếng Việt hoặc tiếng Anh, nhưng cần nhất
+  quán trong cùng một file.
+- Comment trong code chỉ nên thêm khi giúp giải thích logic không hiển nhiên.
 
-- Keep changes focused and atomic.
-- Prefer small, reviewable commits.
-- Update documentation when behavior or setup changes.
-- Use English for commit messages, PR titles, and documentation.
-- Always checkout to a feature branch (e.g. `feature/...`) before making any code changes or generating proposals. Never work directly on `main`.
+## Quy tắc làm việc
+
+- Giữ thay đổi nhỏ, tập trung và dễ review.
+- Ưu tiên tạo branch riêng như `feature/...`, `fix/...` hoặc `docs/...` trước
+  khi sửa code.
+- Không làm việc trực tiếp trên `main` khi triển khai tính năng lớn.
+- Không revert thay đổi của người khác nếu chưa xác nhận.
+- Luôn cập nhật tài liệu khi thay đổi setup, deploy hoặc hành vi người dùng nhìn
+  thấy.
