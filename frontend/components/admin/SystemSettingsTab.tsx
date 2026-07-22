@@ -92,7 +92,7 @@ export default function SystemSettingsTab() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 mb-2">
+          <div className="flex items-center gap-2 text-rose-600 dark:text-rose-300 mb-2">
             <BrainCircuit className="w-5 h-5" />
             <span className="text-xs font-bold uppercase tracking-widest">Cấu hình AI</span>
           </div>
@@ -113,7 +113,7 @@ export default function SystemSettingsTab() {
           <button
             type="button"
             onClick={handleSave}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition-colors shadow-sm shadow-rose-600/15"
           >
             {saved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
             {saved ? 'Đã lưu' : 'Lưu cấu hình'}
@@ -125,14 +125,14 @@ export default function SystemSettingsTab() {
         <button
           type="button"
           onClick={() => setSection('basic')}
-          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${section === 'basic' ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-500 dark:text-gray-400'}`}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${section === 'basic' ? 'bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-300 shadow-sm' : 'text-gray-500 dark:text-gray-400'}`}
         >
           Cơ bản
         </button>
         <button
           type="button"
           onClick={() => setSection('advanced')}
-          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${section === 'advanced' ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-500 dark:text-gray-400'}`}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${section === 'advanced' ? 'bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-300 shadow-sm' : 'text-gray-500 dark:text-gray-400'}`}
         >
           Hệ thống nâng cao
         </button>
@@ -155,7 +155,7 @@ export default function SystemSettingsTab() {
                     value={draft.roles[role].model}
                     onChange={event => updateRoleModel(role, event.target.value)}
                     disabled={draft.useSameModelForHelperRoles && role !== 'answer'}
-                    className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-indigo-500 disabled:opacity-60"
+                    className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-rose-400 disabled:opacity-60"
                   >
                     {SERVER_AI_MODELS.map(model => (
                       <option key={`${role}-${model.id}`} value={model.id}>
@@ -205,13 +205,13 @@ export default function SystemSettingsTab() {
                   key={model.id}
                   type="button"
                   onClick={() => updateRoleModel('answer', model.id)}
-                  className={`flex items-center justify-between gap-3 p-4 rounded-xl border text-left transition-all ${draft.roles.answer.model === model.id ? 'border-indigo-500 bg-indigo-50/60 dark:bg-indigo-500/10 ring-1 ring-indigo-500' : 'border-gray-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-700'}`}
+                  className={`flex items-center justify-between gap-3 p-4 rounded-xl border text-left transition-all ${draft.roles.answer.model === model.id ? 'border-rose-400 bg-rose-50/60 dark:bg-rose-500/10 ring-1 ring-rose-400/80' : 'border-gray-200 dark:border-slate-700 hover:border-rose-200 dark:hover:border-rose-900/70'}`}
                 >
                   <div>
                     <p className="text-sm font-semibold text-gray-900 dark:text-white">{model.name}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{model.fullName}</p>
                   </div>
-                  {draft.roles.answer.model === model.id && <Check className="w-4 h-4 text-indigo-600" />}
+                  {draft.roles.answer.model === model.id && <Check className="w-4 h-4 text-rose-600" />}
                 </button>
               ))}
             </div>
@@ -310,9 +310,9 @@ export default function SystemSettingsTab() {
             />
           </section>
 
-          <div className="flex items-start gap-3 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 p-4">
-            <RefreshCw className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
-            <p className="text-xs leading-5 text-blue-700 dark:text-blue-300">
+          <div className="flex items-start gap-3 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 p-4">
+            <RefreshCw className="w-4 h-4 text-rose-600 dark:text-rose-300 mt-0.5 shrink-0" />
+            <p className="text-xs leading-5 text-rose-700 dark:text-rose-200">
               Sau khi lưu, popup “Tham số” và bộ chọn mô hình ở màn hình chat sẽ tự đồng bộ. Cấu hình chỉ áp dụng cho trình duyệt hiện tại.
             </p>
           </div>
@@ -369,10 +369,10 @@ export default function SystemSettingsTab() {
               return (
                 <div key={feature.title} className="rounded-2xl border border-gray-200 dark:border-slate-800 p-5 bg-white dark:bg-slate-900">
                   <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-300 flex items-center justify-center">
                       <Icon className="w-5 h-5" />
                     </div>
-                    <span className="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wide">
+                    <span className="px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300 text-[10px] font-bold uppercase tracking-wide">
                       {feature.status}
                     </span>
                   </div>
@@ -402,13 +402,13 @@ function ToggleSetting({ label, description, enabled, onChange }: ToggleSettingP
       role="switch"
       aria-checked={enabled}
       onClick={() => onChange(!enabled)}
-      className={`flex items-start justify-between gap-4 rounded-xl border p-4 text-left transition-all ${enabled ? 'border-indigo-300 bg-indigo-50/50 dark:border-indigo-700 dark:bg-indigo-500/10' : 'border-gray-200 dark:border-slate-700'}`}
+      className={`flex items-start justify-between gap-4 rounded-xl border p-4 text-left transition-all ${enabled ? 'border-rose-300 bg-rose-50/50 dark:border-rose-700 dark:bg-rose-500/10' : 'border-gray-200 dark:border-slate-700'}`}
     >
       <div>
         <p className="text-sm font-semibold text-gray-900 dark:text-white">{label}</p>
         <p className="text-xs leading-5 text-gray-500 dark:text-gray-400 mt-1">{description}</p>
       </div>
-      <span className={`relative mt-0.5 h-6 w-11 shrink-0 rounded-full transition-colors ${enabled ? 'bg-indigo-600' : 'bg-gray-300 dark:bg-slate-600'}`}>
+      <span className={`relative mt-0.5 h-6 w-11 shrink-0 rounded-full transition-colors ${enabled ? 'bg-rose-600' : 'bg-gray-300 dark:bg-slate-600'}`}>
         <span className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${enabled ? 'translate-x-6' : 'translate-x-1'}`} />
       </span>
     </button>
@@ -430,7 +430,7 @@ function RangeSetting({ label, value, displayValue, min, max, step, description,
     <div className="rounded-2xl border border-gray-200 dark:border-slate-800 p-5 space-y-4">
       <div className="flex items-center justify-between gap-3">
         <label className="text-sm font-bold text-gray-900 dark:text-white">{label}</label>
-        <span className="font-mono text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 px-2 py-1 rounded-lg">{displayValue}</span>
+        <span className="font-mono text-xs font-semibold text-rose-600 dark:text-rose-300 bg-rose-50 dark:bg-rose-500/10 px-2 py-1 rounded-lg">{displayValue}</span>
       </div>
       <input
         type="range"
@@ -439,7 +439,7 @@ function RangeSetting({ label, value, displayValue, min, max, step, description,
         step={step}
         value={value}
         onChange={event => onChange(Number(event.target.value))}
-        className="w-full h-2 bg-gray-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+        className="w-full h-2 bg-gray-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-rose-600"
       />
       <p className="text-xs leading-5 text-gray-500 dark:text-gray-400">{description}</p>
     </div>

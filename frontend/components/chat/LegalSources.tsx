@@ -61,7 +61,7 @@ export function LegalSourcesTrigger({
       <button
         type="button"
         onClick={() => onOpenAll(deduped)}
-        className="flex w-full items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50/70 px-3 py-2 text-left text-sm font-semibold text-blue-800 transition hover:border-blue-200 hover:bg-blue-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-200 dark:hover:bg-blue-500/20"
+        className="flex w-full items-center justify-between gap-3 rounded-xl border border-rose-100 bg-rose-50/70 px-3 py-2 text-left text-sm font-semibold text-rose-800 transition hover:border-rose-200 hover:bg-rose-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-200 dark:hover:bg-rose-500/20"
         aria-expanded={expanded}
         aria-controls={controlsId}
         aria-label={`Mở ${deduped.length} căn cứ pháp lý`}
@@ -70,7 +70,7 @@ export function LegalSourcesTrigger({
           <BookOpen className="h-4 w-4 shrink-0" />
           <span className="truncate">Căn cứ pháp lý</span>
           <span
-            className="inline-flex h-6 min-w-6 shrink-0 items-center justify-center rounded-full border border-blue-300/40 bg-blue-500/15 px-1.5 text-xs font-semibold text-blue-800 dark:border-blue-400/30 dark:text-blue-200"
+            className="inline-flex h-6 min-w-6 shrink-0 items-center justify-center rounded-full border border-rose-300/40 bg-rose-500/15 px-1.5 text-xs font-semibold text-rose-800 dark:border-rose-400/30 dark:text-rose-200"
             aria-hidden="true"
           >
             {deduped.length}
@@ -108,7 +108,7 @@ export function LegalSourceList({ sources = [] }: LegalSourceListProps) {
           return (
             <article
               key={key}
-              className="rounded-xl border border-slate-200 bg-white p-3 text-left shadow-sm transition hover:border-blue-200 dark:border-white/10 dark:bg-slate-950/40 dark:hover:border-blue-500/30"
+              className="rounded-xl border border-slate-200 bg-white p-3 text-left shadow-sm transition hover:border-rose-200 dark:border-white/10 dark:bg-slate-950/40 dark:hover:border-rose-500/30"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
@@ -116,7 +116,7 @@ export function LegalSourceList({ sources = [] }: LegalSourceListProps) {
                     {buildTitle(source)}
                   </h4>
                   {meta && (
-                    <p className="mt-1 text-xs font-semibold text-blue-700 dark:text-blue-300">
+                    <p className="mt-1 text-xs font-semibold text-rose-700 dark:text-rose-300">
                       {meta}
                     </p>
                   )}
@@ -124,11 +124,11 @@ export function LegalSourceList({ sources = [] }: LegalSourceListProps) {
                 <button
                   type="button"
                   onClick={() => copyCitation(source, key)}
-                  className="shrink-0 rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 dark:hover:bg-white/10 dark:hover:text-blue-300"
+                  className="shrink-0 rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-rose-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 dark:hover:bg-white/10 dark:hover:text-rose-300"
                   aria-label="Sao chép trích dẫn"
                   title={copiedKey === key ? 'Đã sao chép' : 'Sao chép trích dẫn'}
                 >
-                  {copiedKey === key ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copiedKey === key ? <Check className="h-3.5 w-3.5 text-rose-600" /> : <Copy className="h-3.5 w-3.5" />}
                 </button>
               </div>
 
@@ -140,7 +140,7 @@ export function LegalSourceList({ sources = [] }: LegalSourceListProps) {
                 <button
                   type="button"
                   onClick={() => setExpanded(current => ({ ...current, [key]: !isExpanded }))}
-                  className="mt-2 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-blue-700 transition hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 dark:text-blue-300 dark:hover:bg-blue-500/10"
+                  className="mt-2 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-rose-700 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 dark:text-rose-300 dark:hover:bg-rose-500/10"
                   aria-expanded={isExpanded}
                 >
                   {isExpanded ? 'Thu gọn' : 'Xem nội dung'}

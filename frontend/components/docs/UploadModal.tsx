@@ -103,13 +103,13 @@ export default function UploadModal({ onClose, onSuccess }: UploadModalProps) {
         <div className="p-6 flex-1">
           {uploadStatus === 'success' ? (
             <div className="flex flex-col items-center justify-center py-8 text-center space-y-4">
-              <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center">
-                <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+              <div className="w-16 h-16 bg-rose-100 dark:bg-rose-500/20 rounded-full flex items-center justify-center">
+                <CheckCircle2 className="w-8 h-8 text-rose-600 dark:text-rose-300" />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Tải lên thành công!</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Tài liệu đã được phân tách thành <span className="font-bold text-emerald-600 dark:text-emerald-400">{chunksCount}</span> đoạn dữ liệu và đưa vào kho truy xuất.
+                  Tài liệu đã được phân tách thành <span className="font-bold text-rose-600 dark:text-rose-300">{chunksCount}</span> đoạn dữ liệu và đưa vào kho truy xuất.
                 </p>
               </div>
             </div>
@@ -118,10 +118,10 @@ export default function UploadModal({ onClose, onSuccess }: UploadModalProps) {
               <div 
                 className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all ${
                   isDragging 
-                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10' 
+                    ? 'border-rose-400 bg-rose-50 dark:bg-rose-500/10'
                     : selectedFiles.length > 0 
-                      ? 'border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10'
-                      : 'border-gray-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-gray-50 dark:hover:bg-slate-800/50'
+                      ? 'border-rose-200 dark:border-rose-800 bg-rose-50/50 dark:bg-rose-900/10'
+                      : 'border-gray-200 dark:border-slate-700 hover:border-rose-200 dark:hover:border-rose-800 hover:bg-gray-50 dark:hover:bg-slate-800/50'
                 }`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -143,7 +143,7 @@ export default function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                 {selectedFiles.length > 0 && uploadStatus !== 'error' ? (
                   <div className="flex flex-col items-center w-full">
                     <div className="flex items-center gap-2 mb-3">
-                      <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                      <FileText className="w-6 h-6 text-rose-600 dark:text-rose-300" />
                       <span className="font-medium text-gray-900 dark:text-white">Đã chọn {selectedFiles.length} tệp</span>
                     </div>
                     
@@ -167,7 +167,7 @@ export default function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                     <div className="flex gap-4">
                       <button 
                         onClick={() => fileInputRef.current?.click()}
-                        className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                        className="text-xs text-rose-600 dark:text-rose-300 hover:underline font-medium"
                       >
                         Thêm tệp
                       </button>
@@ -185,7 +185,7 @@ export default function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                       <UploadCloud className="w-6 h-6 text-gray-500 dark:text-gray-400" />
                     </div>
                     <span className="text-sm font-medium text-gray-900 dark:text-white mb-1">
-                      Kéo thả tệp vào đây hoặc <span className="text-blue-600 dark:text-blue-400">chọn tệp</span>
+                      Kéo thả tệp vào đây hoặc <span className="text-rose-600 dark:text-rose-300">chọn tệp</span>
                     </span>
                     <span className="text-xs text-gray-500">
                       Chỉ hỗ trợ tệp văn bản (.txt)
@@ -208,7 +208,7 @@ export default function UploadModal({ onClose, onSuccess }: UploadModalProps) {
           {uploadStatus === 'success' ? (
             <button
               onClick={onSuccess}
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-all shadow-sm"
+              className="px-6 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium rounded-xl transition-all shadow-sm"
             >
               Hoàn tất
             </button>
@@ -224,7 +224,7 @@ export default function UploadModal({ onClose, onSuccess }: UploadModalProps) {
               <button
                 onClick={handleUpload}
                 disabled={selectedFiles.length === 0 || uploadStatus === 'uploading'}
-                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 dark:disabled:bg-blue-800 text-white text-sm font-medium rounded-xl transition-all shadow-sm flex items-center gap-2"
+                className="px-6 py-2 bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300 dark:disabled:bg-rose-900 text-white text-sm font-medium rounded-xl transition-all shadow-sm flex items-center gap-2"
               >
                 {uploadStatus === 'uploading' ? (
                   <>

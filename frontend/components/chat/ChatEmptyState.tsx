@@ -15,7 +15,7 @@ const SUGGESTIONS = [
 export function ChatEmptyState({ onSelectSuggestion }: ChatEmptyStateProps) {
   return (
     <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col justify-center px-4 py-10 text-center">
-      <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-700 text-white shadow-lg shadow-blue-700/15">
+      <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-700 text-white shadow-lg shadow-rose-700/15">
         <Scale className="h-8 w-8" />
       </div>
       <h1 className="text-2xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-3xl">
@@ -31,7 +31,7 @@ export function ChatEmptyState({ onSelectSuggestion }: ChatEmptyStateProps) {
             key={prompt}
             type="button"
             onClick={() => onSelectSuggestion(prompt)}
-            className="rounded-2xl border border-slate-200 bg-white p-4 text-left text-sm font-semibold leading-6 text-slate-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-blue-500/10"
+            className="rounded-2xl border border-slate-200 bg-white p-4 text-left text-sm font-semibold leading-6 text-slate-700 shadow-sm transition hover:border-rose-200 hover:bg-rose-50/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-rose-500/10"
           >
             {prompt}
           </button>

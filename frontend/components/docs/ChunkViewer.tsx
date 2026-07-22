@@ -79,7 +79,7 @@ export default function ChunkViewer({ lawId, onClose }: ChunkViewerProps) {
     <div className="flex flex-col h-full bg-white dark:bg-slate-900 shadow-2xl">
       <div className="h-16 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 bg-slate-50/50 dark:bg-slate-900/50">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-300 flex items-center justify-center">
             <Layers className="w-4 h-4" />
           </div>
           <div>
@@ -121,18 +121,18 @@ export default function ChunkViewer({ lawId, onClose }: ChunkViewerProps) {
             Không tìm thấy đoạn dữ liệu nào cho văn bản này.
           </div>
         ) : (
-          <div className="space-y-4 relative before:absolute before:inset-y-0 before:left-[19px] before:w-px before:bg-indigo-100 dark:before:bg-indigo-900/50">
+          <div className="space-y-4 relative before:absolute before:inset-y-0 before:left-[19px] before:w-px before:bg-rose-100 dark:before:bg-rose-900/50">
             <div className="text-[11px] font-medium text-gray-500 mb-6 pl-12">
-              Tìm thấy <span className="text-indigo-600 dark:text-indigo-400 font-bold">{chunks.length}</span> đoạn dữ liệu
+              Tìm thấy <span className="text-rose-600 dark:text-rose-300 font-bold">{chunks.length}</span> đoạn dữ liệu
             </div>
             {chunks.map(chunk => {
               const positionLabel = getReadablePosition(chunk);
 
               return (
                 <div key={chunk.id} className="relative pl-12">
-                  <div className="absolute left-[13px] top-4 w-3 h-3 rounded-full border-2 border-indigo-600 dark:border-indigo-400 bg-white dark:bg-slate-900 z-10 shadow-sm ring-4 ring-slate-50 dark:ring-slate-950"></div>
+                  <div className="absolute left-[13px] top-4 w-3 h-3 rounded-full border-2 border-rose-600 dark:border-rose-300 bg-white dark:bg-slate-900 z-10 shadow-sm ring-4 ring-slate-50 dark:ring-slate-950"></div>
                   
-                  <div className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-gray-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow hover:border-indigo-300 dark:hover:border-indigo-700 group">
+                  <div className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-gray-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow hover:border-rose-200 dark:hover:border-rose-900/70 group">
                     <div className="mb-3 flex flex-wrap items-center gap-2">
                       <div
                         className="inline-flex min-w-0 items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300"
@@ -142,7 +142,7 @@ export default function ChunkViewer({ lawId, onClose }: ChunkViewerProps) {
                         <span className="truncate">{getReadableChunkId(chunk.id)}</span>
                       </div>
                       {positionLabel && (
-                        <span className="inline-flex max-w-full rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold leading-4 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
+                        <span className="inline-flex max-w-full rounded-full border border-rose-100 bg-rose-50 px-2.5 py-1 text-[11px] font-semibold leading-4 text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">
                           {positionLabel}
                         </span>
                       )}
