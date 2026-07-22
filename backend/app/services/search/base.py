@@ -1,6 +1,6 @@
 """
-Base Protocol cho Search module.
-Mọi search strategy đều phải implement interface này.
+Base protocol for search modules.
+Every search strategy must implement this interface.
 """
 from typing import Protocol, List, Optional, runtime_checkable
 
@@ -9,14 +9,14 @@ from langchain_core.documents import Document
 
 @runtime_checkable
 class BaseSearcher(Protocol):
-    """Interface cho document search/retrieval strategies.
+    """Interface for document search and retrieval strategies.
 
-    Dùng để ablation study: so sánh vector search, BM25, hybrid, v.v.
+    Used for ablation studies across vector search, BM25, hybrid search, etc.
     """
 
     @property
     def strategy_name(self) -> str:
-        """Tên strategy để logging và tracking."""
+        """Strategy name used for logging and tracking."""
         ...
 
     def search(
@@ -25,15 +25,15 @@ class BaseSearcher(Protocol):
         k: int = 6,
         category: Optional[str] = None,
     ) -> List[Document]:
-        """Tìm kiếm tài liệu liên quan đến câu truy vấn.
+        """Search for documents related to the query.
 
         Args:
-            query: Câu hỏi / truy vấn của người dùng.
-            k: Số lượng kết quả trả về.
-            category: Lọc theo lĩnh vực luật (None = không lọc).
+            query: User question or query.
+            k: Number of results to return.
+            category: Optional legal category filter.
 
         Returns:
-            Danh sách Document được xếp hạng theo độ liên quan.
+            Documents ranked by relevance.
         """
         ...
 
@@ -43,5 +43,5 @@ class BaseSearcher(Protocol):
         k: int = 6,
         category: Optional[str] = None,
     ) -> List[Document]:
-        """Async version của search."""
+        """Async search variant."""
         ...

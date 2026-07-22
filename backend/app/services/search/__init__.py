@@ -1,13 +1,12 @@
 """
-Search Module — Strategies cho việc tìm kiếm tài liệu liên quan.
+Search module for retrieving relevant documents.
 
 Protocol:
-    BaseSearcher: Interface chung cho tất cả search strategies.
+    BaseSearcher: shared interface for search strategies.
 
 Implementations:
-    - FAISSSearcher: Vector similarity search qua FAISS (mặc định)
-    - BM25Searcher: Lexical search dùng BM25
-    - HybridSearcher: Kết hợp vector + BM25
+    - FAISSSearcher: FAISS vector similarity search.
+    - QdrantSearcher: Qdrant dense/sparse retrieval.
 """
 from app.services.search.base import BaseSearcher
 from app.services.search.faiss_search import FAISSSearcher

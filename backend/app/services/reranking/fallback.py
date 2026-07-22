@@ -7,8 +7,8 @@ logger = logging.getLogger(__name__)
 
 class FallbackReranker(BaseReranker):
     """
-    Wrapper để tự động fallback sang mô hình reranker dự phòng nếu mô hình chính bị lỗi.
-    Ví dụ: Lỗi OutOfMemory từ CrossEncoder -> Fallback về NoReranker.
+    Wrapper that falls back to a secondary reranker when the primary fails.
+    Example: CrossEncoder out-of-memory errors can fall back to NoReranker.
     """
     def __init__(self, primary: BaseReranker, secondary: BaseReranker):
         self.primary = primary

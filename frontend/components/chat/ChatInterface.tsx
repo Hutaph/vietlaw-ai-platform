@@ -525,7 +525,7 @@ export function ChatInterface() {
           </div>
           {CHAT_STORAGE_MODE === 'browser' && (
             <div className="text-[10px] font-medium text-slate-500 dark:text-slate-400 px-2 py-1 rounded-full bg-slate-100 dark:bg-white/10">
-              Lá»‹ch sá»­ chá»‰ lÆ°u trÃªn thiáº¿t bá»‹ nÃ y
+              Lịch sử chỉ lưu trên thiết bị này
             </div>
           )}
         </div>
@@ -699,7 +699,7 @@ export function ChatInterface() {
                 style={{ minHeight: '52px', maxHeight: '160px' }}
               />
 
-              {/* Nut Send / Stop */}
+              {/* Send / stop control */}
               {isLoading ? (
                 <button
                   onClick={handleAbort}

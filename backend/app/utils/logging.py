@@ -1,13 +1,13 @@
 """
-Cấu hình logging chuẩn cho toàn bộ backend.
-Thay thế tất cả print() bằng logger có format thống nhất.
+Centralized backend logging configuration.
+Use this helper instead of print() so logs keep a consistent format.
 """
 import logging
 import sys
 
 
 def setup_logger(name: str = "vietlaw") -> logging.Logger:
-    """Tạo logger với format tiếng Việt dễ đọc."""
+    """Create a logger with the standard VietLaw format."""
     logger = logging.getLogger(name)
 
     if logger.handlers:
@@ -29,5 +29,5 @@ def setup_logger(name: str = "vietlaw") -> logging.Logger:
     return logger
 
 
-# Logger mặc định cho toàn hệ thống
+# Default application logger.
 logger = setup_logger()

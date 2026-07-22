@@ -1,5 +1,5 @@
 """
-Clause Chunker — Chunk theo điều khoản và tách nhỏ khoản quá dài.
+Clause chunker that splits legal documents by clause and long sub-clauses.
 """
 from typing import List, Dict, Any
 
@@ -39,10 +39,10 @@ def _build_embedding_content(
 
 
 class ClauseChunker:
-    """Chunking theo đơn vị điều khoản (Khoản).
+    """Chunk legal documents by clause.
 
-    Mỗi clause trong file JSON trở thành một Document, trừ các khoản quá dài
-    được tách tiếp theo điểm hoặc sliding window.
+    Each clause becomes one Document unless it is long enough to require
+    sub-clause or sliding-window splitting.
     """
 
     @property
@@ -50,14 +50,13 @@ class ClauseChunker:
         return "clause"
 
     def chunk(self, raw_data: Dict[str, Any]) -> List[Document]:
-        """Tách từng clause thành một hoặc nhiều Document.
+        """Split each clause into one or more Documents.
 
         Args:
-            raw_data: Dữ liệu JSON chứa 'law_info' và 'clauses'.
+            raw_data: JSON containing 'law_info' and 'clauses'.
 
         Returns:
-            Danh sách Document với metadata gồm id, law_id, category,
-            chunk_part.
+            Documents with id, law_id, category, and chunk_part metadata.
         """
         law_info = raw_data.get("law_info", {})
         law_id = law_info.get("law_id")

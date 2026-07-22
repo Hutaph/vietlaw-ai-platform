@@ -1,6 +1,6 @@
 """
-No Reranker — Pass-through, giữ nguyên thứ tự từ search.
-Dùng làm baseline trong ablation study.
+No Reranker.
+Pass-through baseline that preserves the search result order.
 """
 from typing import List, Optional
 
@@ -8,10 +8,10 @@ from langchain_core.documents import Document
 
 
 class NoReranker:
-    """Pass-through reranker — không thay đổi thứ tự documents.
+    """Pass-through reranker that does not reorder documents.
 
-    Đây là baseline: chỉ cắt tại top_k mà không xếp hạng lại.
-    Dùng để so sánh với các reranking strategies thực sự.
+    This baseline only truncates to top_k and is used for comparison against
+    actual reranking strategies.
     """
 
     @property
@@ -25,5 +25,5 @@ class NoReranker:
         top_k: int,
         api_key: Optional[str] = None,
     ) -> List[Document]:
-        """Trả về documents giữ nguyên, chỉ cắt tại top_k."""
+        """Return documents in the original order, truncated to top_k."""
         return documents[:top_k]

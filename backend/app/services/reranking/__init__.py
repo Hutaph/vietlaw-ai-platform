@@ -1,12 +1,13 @@
 """
-Reranking Module — Strategies cho việc xếp hạng lại kết quả search.
+Reranking module for reordering search candidates.
 
 Protocol:
-    BaseReranker: Interface chung cho tất cả reranking strategies.
+    BaseReranker: shared interface for reranking strategies.
 
 Implementations:
-    - NoReranker: Pass-through (không rerank, giữ nguyên thứ tự)
-    - CrossEncoderReranker: Dùng cross-encoder model để rerank
+    - NoReranker: pass-through baseline.
+    - CrossEncoderReranker: local cross-encoder reranker.
+    - HuggingFaceEmbeddingSimilarityReranker: remote embedding-similarity reranker.
 """
 from app.services.reranking.base import BaseReranker
 from app.services.reranking.no_reranker import NoReranker

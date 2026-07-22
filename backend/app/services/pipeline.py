@@ -1,10 +1,10 @@
 """
-RAG Pipeline Orchestrator — Kết nối các module thành pipeline hoàn chỉnh.
+RAG Pipeline Orchestrator.
 
 Pipeline flow:
     Query → Search → Rerank → Context Build → (LLM)
 
-Hỗ trợ config-driven assembly để dễ dàng thực hiện ablation study.
+Components are assembled from configuration to support ablation studies.
 """
 import os
 import json
@@ -49,11 +49,11 @@ logger = setup_logger("vietlaw.pipeline")
 
 
 class RAGPipeline:
-    """Orchestrator — kết nối Search, Rerank, và Context Builder.
+    """Orchestrator that connects Search, Rerank, and Context Builder.
 
-    Cho phép swap từng component độc lập để thực hiện ablation study.
+    Each component can be swapped independently for ablation studies.
 
-    Ví dụ:
+    Example:
         # Baseline
         pipeline = RAGPipeline(searcher=faiss, reranker=no_reranker, context_builder=nested)
 
@@ -88,14 +88,14 @@ class RAGPipeline:
         embedding_api_key: Optional[str] = None,
         reranker_api_key: Optional[str] = None,
     ) -> Tuple[List[Document], str]:
-        """Thực hiện full retrieval pipeline: Search → Rerank → Context Build.
+        """Run the full retrieval pipeline: Search → Rerank → Context Build.
 
         Args:
-            query: Câu hỏi của người dùng.
+            query: User question.
             k: Number of candidate documents to retrieve before reranking.
             rerank_top_k: Number of documents kept after reranking (default = RETRIEVER_K).
-            category: Lọc theo lĩnh vực luật.
-            api_key: API key cho embedding model (nếu dùng endpoint cloud).
+            category: Optional legal category filter.
+            api_key: Embedding API key when a cloud endpoint is used.
 
         Returns:
             Tuple (documents, context_string).
@@ -115,7 +115,7 @@ class RAGPipeline:
             queries = [query]
 
         # Step 1: Search
-        # Truyền api_key xuống searcher nếu nó hỗ trợ
+        # Pass api_key to searchers that support endpoint-backed embedding.
         import inspect
         if "api_key" in inspect.signature(self.searcher.search).parameters:
             docs = self.searcher.search(
@@ -199,7 +199,7 @@ class RAGPipeline:
         embedding_api_key: Optional[str] = None,
         reranker_api_key: Optional[str] = None,
     ) -> Tuple[List[Document], str]:
-        """Async version của retrieve — dùng trong FastAPI endpoint."""
+        """Async retrieval variant used by FastAPI endpoints."""
         final_k = rerank_top_k or RETRIEVER_K
 
         # Step 0: Async Rewrite & Route
@@ -359,12 +359,12 @@ class RAGPipeline:
         )
         return selected, context
     def format_for_frontend(self, docs: List[Document]) -> List[Dict[str, Any]]:
-        """Delegate format cho context_builder."""
+        """Delegate frontend formatting to the active context builder."""
         return self.context_builder.format_for_frontend(docs)
 
 
 # ---------------------------------------------------------------------------
-# FACTORY: Khởi tạo pipeline từ config
+# FACTORY: initialize the pipeline from config.
 # ---------------------------------------------------------------------------
 
 # Module-level state
@@ -406,7 +406,7 @@ def _get_embedding(api_key: str = None) -> Optional[BaseEmbedding]:
 
 
 def _get_processed_files() -> List[str]:
-    """Đọc danh sách các file đã được embedding thành công trước đó."""
+    """Read the list of files that have already been embedded."""
     if os.path.exists(TRACKING_FILE):
         with open(TRACKING_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -414,7 +414,7 @@ def _get_processed_files() -> List[str]:
 
 
 def _mark_file_as_processed(filename: str) -> None:
-    """Đánh dấu file đã xử lý xong."""
+    """Mark a file as processed."""
     processed = _get_processed_files()
     if filename not in processed:
         processed.append(filename)
@@ -423,7 +423,7 @@ def _mark_file_as_processed(filename: str) -> None:
 
 
 def _embed_single_file(file_path: str, chunker, embedding) -> None:
-    """Nhúng (embedding) một file JSON vào FAISS index."""
+    """Embed one JSON file into the FAISS index."""
     global _faiss_vectorstore
 
     filename = os.path.basename(file_path)
@@ -434,7 +434,7 @@ def _embed_single_file(file_path: str, chunker, embedding) -> None:
     with open(file_path, 'r', encoding='utf-8') as f:
         raw_data = json.load(f)
 
-    # Dùng chunker module để tách documents
+    # Use the configured chunker to split documents.
     splits = chunker.chunk(raw_data)
     logger.info("Số lượng chunk cần nhúng: %d", len(splits))
 
@@ -472,16 +472,16 @@ def _embed_single_file(file_path: str, chunker, embedding) -> None:
 
     _faiss_vectorstore.save_local(FAISS_INDEX_PATH)
     _mark_file_as_processed(filename)
-    logger.info("ĐÃ HOÀN THÀNH VÀ LƯU FILE: %s", filename)
+    logger.info("Finished embedding and saved file: %s", filename)
 
 
 def _init_faiss_index(embedding) -> None:
-    """Khởi tạo FAISS index từ ổ cứng. Không tự động embed tài liệu mới."""
+    """Load the FAISS index from disk without auto-embedding new documents."""
     global _faiss_vectorstore
 
     lc_embeddings = embedding.langchain_embeddings
 
-    # Tải index cũ nếu đã có
+    # Load an existing index when available.
     if os.path.exists(FAISS_INDEX_PATH):
         logger.info("Đang tải FAISS Index từ ổ cứng...")
         try:
@@ -504,7 +504,7 @@ def _init_faiss_index(embedding) -> None:
 
 
 def _create_chunker():
-    """Tạo chunker dựa trên config."""
+    """Create a chunker from config."""
     strategy = PIPELINE_CONFIG.get("chunking", "clause")
     if strategy == "clause":
         return ClauseChunker()
@@ -513,7 +513,7 @@ def _create_chunker():
 
 
 def _create_searcher(embedding) -> Any:
-    """Tạo searcher dựa trên config."""
+    """Create the configured searcher."""
     global _faiss_vectorstore
 
     strategy = PIPELINE_CONFIG.get("search", "faiss")
@@ -530,7 +530,7 @@ def _create_searcher(embedding) -> Any:
             )
         return QdrantSearcher(vectorstore=_faiss_vectorstore, fallback_searcher=faiss_searcher)
 
-    # FAISS searcher luôn cần (dùng cho cả hybrid)
+    # FAISS searcher is required for FAISS-backed retrieval.
     if _faiss_vectorstore is None:
         raise RuntimeError("FAISS vectorstore chưa được khởi tạo!")
 
@@ -544,7 +544,7 @@ def _create_searcher(embedding) -> Any:
 
 
 def _create_reranker():
-    """Tạo reranker dựa trên config, tích hợp Fallback."""
+    """Create the configured reranker."""
     strategy = PIPELINE_CONFIG.get("reranking", "none")
     max_candidates = PIPELINE_CONFIG.get("reranker_max_candidates", 20)
     if RUNTIME_PROFILE == "serverless" and strategy == "cross_encoder":
@@ -580,7 +580,7 @@ def _create_reranker():
 
 
 def _create_context_builder():
-    """Tạo context builder dựa trên config."""
+    """Create the configured context builder."""
     strategy = PIPELINE_CONFIG.get("context_builder", "nested")
     if strategy == "nested":
         return NestedContextBuilder()
@@ -588,7 +588,7 @@ def _create_context_builder():
         raise ValueError(f"Unknown context_builder strategy: {strategy}")
 
 def _create_rewriter():
-    """Tạo rewriter dựa trên config."""
+    """Create the configured query rewriter."""
     strategy = PIPELINE_CONFIG.get("rewriter", "none")
     if strategy == "none":
         from app.services.rewriting.no_rewriter import NoOpRewriter
@@ -600,14 +600,14 @@ def _create_rewriter():
         raise ValueError(f"Unknown rewriter strategy: {strategy}")
 
 
-# Cần import Any cho type hint
+# Backward-compatible type import used by legacy annotations.
 from typing import Any
 
 
 def init_pipeline() -> None:
-    """Khởi tạo toàn bộ pipeline: Knowledge Base → FAISS → Searcher → Pipeline.
+    """Initialize the full pipeline: Knowledge Base → FAISS → Searcher → Pipeline.
 
-    Gọi hàm này trong FastAPI startup event.
+    Called from the FastAPI startup flow.
     """
     global _pipeline
 
@@ -617,10 +617,10 @@ def init_pipeline() -> None:
     logger.info("=" * 60)
 
     try:
-        # 1. Nạp dữ liệu vào RAM
+        # 1. Load corpus metadata into memory.
         load_knowledge_base()
 
-        # 2. Khởi tạo embedding + FAISS index (chỉ khi cần cho FAISS-based backend)
+        # 2. Initialize embeddings and FAISS only when FAISS-backed storage is active.
         embedding = None
         if STORAGE_BACKEND.lower() not in {"qdrant_postgres", "qdrant", "postgres", "postgresql"}:
             embedding = _get_embedding()
@@ -631,7 +631,7 @@ def init_pipeline() -> None:
         else:
             logger.info("Storage backend %s dùng Qdrant/PostgreSQL; bỏ qua khởi tạo FAISS index để tăng tốc startup.", STORAGE_BACKEND)
 
-        # 3. Tạo các components từ config
+        # 3. Create components from config.
         searcher = _create_searcher(embedding)
         reranker = _create_reranker()
         context_builder = _create_context_builder()
@@ -697,7 +697,7 @@ def preload_local_models(warmup: bool = False) -> dict:
 
 
 def get_pipeline() -> RAGPipeline:
-    """Trả về pipeline hiện tại, tự động khởi tạo nếu cần."""
+    """Return the current pipeline, initializing it lazily when needed."""
     global _pipeline
 
     if _pipeline is None:

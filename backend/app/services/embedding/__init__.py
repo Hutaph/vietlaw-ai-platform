@@ -1,12 +1,12 @@
 """
-Embedding Module — Abstract interface và implementations cho text embedding.
+Embedding module with the abstract interface and concrete implementations.
 
 Protocol:
-    BaseEmbedding: Interface chung cho tất cả embedding strategies.
+    BaseEmbedding: shared interface for embedding strategies.
 
 Implementations:
-    - HuggingFaceEndpointEmbedding: Gọi HuggingFace Inference API (mặc định)
-    - OllamaEmbedding: Chạy model local qua Ollama
+    - HuggingFaceEndpointEmbedding: Hugging Face API or local SentenceTransformer.
+    - OllamaEmbedding: local embedding through Ollama.
 """
 from app.services.embedding.base import BaseEmbedding
 from app.services.embedding.hf_endpoint import HuggingFaceEndpointEmbedding

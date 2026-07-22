@@ -14,7 +14,7 @@ langchain-openai>=0.1.0
 langchain-text-splitters>=0.2.0
 
 # === Vector Store ===
-# faiss-cpu # (Ẩn khi deploy Vercel: Chỉ cần nếu dùng FAISS local fallback)
+# faiss-cpu is installed separately for local FAISS fallback paths.
 qdrant-client>=0.11.0
 
 # === Database ===
@@ -26,5 +26,5 @@ huggingface_hub>=0.24.0
 # === Local Model Runtime ===
 
 # === Ingestion & Local Tools ===
-# faiss-cpu # (Ẩn khi deploy Vercel: Chỉ cần nếu dùng FAISS local fallback)
+# faiss-cpu is installed separately for local FAISS fallback paths.
 tqdm>=4.66.0
