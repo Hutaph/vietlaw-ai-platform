@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { User, Scale, BookOpen, Copy, Check, ThumbsUp, ThumbsDown, RotateCcw, Undo2 } from 'lucide-react';
+import { User, Scale, BookOpen, Copy, Check, ThumbsUp, ThumbsDown, RotateCcw, Undo2, Pencil, SendHorizontal, X } from 'lucide-react';
 import type { Message, DocumentChunk } from '@/lib/types';
 import { ChatProcessingTrace } from './ChatProcessingTrace';
 import { dedupeLegalSources, LegalSourcesTrigger } from './LegalSources';
@@ -31,6 +31,8 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
   const [comment, setComment] = useState('');
   const [selectedCitation, setSelectedCitation] = useState<DocumentChunk | null>(null);
   const [isProcessCollapsed, setIsProcessCollapsed] = useState(true);
+  const [isEditingPrompt, setIsEditingPrompt] = useState(false);
+  const [editedPrompt, setEditedPrompt] = useState(message.content);
 
   React.useEffect(() => {
     setFeedback(message.feedback === 1 ? 'up' : message.feedback === -1 ? 'down' : null);
@@ -65,6 +67,13 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
       onFeedbackSubmit(message.id, -1, reason, comment);
     }
     setShowNegativeForm(false);
+  };
+
+  const submitEditedPrompt = () => {
+    const nextPrompt = editedPrompt.trim();
+    if (!nextPrompt || !onRefine) return;
+    setIsEditingPrompt(false);
+    onRefine(nextPrompt);
   };
 
   // Parse <cite id="...">...</cite> into markdown link format
@@ -164,13 +173,57 @@ export function ChatMessage({ message, isStreaming = false, onRefine, onOpenCont
               </button>
               {onRefine && (
                 <button
-                  onClick={() => onRefine(message.content)}
-                  title="Gửi lại"
+                  onClick={() => {
+                    setEditedPrompt(message.content);
+                    setIsEditingPrompt(true);
+                  }}
+                  title="Chỉnh sửa câu hỏi rồi gửi"
                   className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
                 >
-                  <Undo2 className="w-3.5 h-3.5" />
+                  <Pencil className="w-3.5 h-3.5" />
                 </button>
               )}
+            </div>
+          )}
+
+          {isUser && isEditingPrompt && (
+            <div className="mt-2 w-full max-w-[92%] sm:max-w-[88%] rounded-2xl border border-rose-100 bg-white p-2 shadow-lg shadow-rose-100/40 dark:border-rose-500/20 dark:bg-[#171717] dark:shadow-none">
+              <textarea
+                value={editedPrompt}
+                onChange={(event) => setEditedPrompt(event.target.value)}
+                onKeyDown={(event) => {
+                  if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+                    event.preventDefault();
+                    submitEditedPrompt();
+                  }
+                  if (event.key === 'Escape') {
+                    setIsEditingPrompt(false);
+                  }
+                }}
+                autoFocus
+                rows={3}
+                className="w-full resize-none rounded-xl border border-gray-200 bg-slate-50 px-3 py-2 text-sm leading-6 text-gray-800 outline-none transition-colors placeholder:text-gray-400 focus:border-rose-300 focus:bg-white dark:border-white/10 dark:bg-[#202020] dark:text-gray-100 dark:focus:border-rose-400"
+                placeholder="Chỉnh lại câu hỏi..."
+              />
+              <div className="mt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsEditingPrompt(false)}
+                  className="inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-gray-200"
+                >
+                  <X className="h-3.5 w-3.5" />
+                  Hủy
+                </button>
+                <button
+                  type="button"
+                  onClick={submitEditedPrompt}
+                  disabled={!editedPrompt.trim()}
+                  className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-rose-600 px-3 text-xs font-semibold text-white shadow-sm shadow-rose-500/20 transition-colors hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <SendHorizontal className="h-3.5 w-3.5" />
+                  Gửi câu mới
+                </button>
+              </div>
             </div>
           )}
 
