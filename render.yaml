@@ -1,0 +1,88 @@
+services:
+  - type: web
+    name: vietlaw-ai-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    envVars:
+      - key: APP_URL
+        sync: false
+      - key: STORAGE_BACKEND
+        value: qdrant_postgres
+      - key: POSTGRES_DSN
+        sync: false
+      - key: QDRANT_URL
+        sync: false
+      - key: QDRANT_API_KEY
+        sync: false
+      - key: QDRANT_COLLECTION
+        value: vietlaw_clauses_v4
+      - key: QDRANT_TIMEOUT
+        value: "180"
+      - key: QDRANT_MAX_RETRIES
+        value: "6"
+      - key: DISABLE_AUTO_INGEST
+        value: "true"
+      - key: ENABLE_FAISS_FALLBACK
+        value: "false"
+      - key: CHAT_STORAGE_MODE
+        value: postgres
+      - key: NEXT_PUBLIC_CHAT_STORAGE_MODE
+        value: postgres
+      - key: RUNTIME_PROFILE
+        value: local
+      - key: EMBEDDING_PROVIDER
+        value: huggingface
+      - key: HUGGINGFACE_EMBEDDING_MODE
+        value: local
+      - key: HUGGINGFACE_EMBEDDING_MODEL
+        value: /models/embedding/vietlaw-bge-m3-finetuned/best
+      - key: EMBEDDING_DEVICE
+        value: cpu
+      - key: EMBEDDING_DIMENSION
+        value: "1024"
+      - key: EMBEDDING_NORMALIZE
+        value: "true"
+      - key: LOCAL_MODELS_OFFLINE
+        value: "true"
+      - key: LOCAL_MODELS_PRELOAD_ENABLED
+        value: "true"
+      - key: LOCAL_MODELS_WARMUP_ENABLED
+        value: "true"
+      - key: PIPELINE_CHUNKING
+        value: clause
+      - key: PIPELINE_SEARCH
+        value: faiss
+      - key: PIPELINE_RERANKING
+        value: cross_encoder
+      - key: PIPELINE_CONTEXT_BUILDER
+        value: nested
+      - key: PIPELINE_REWRITER
+        value: none
+      - key: RERANKER_MODEL
+        value: /models/reranking/vietlaw-bge-reranker-v2-m3-finetuned/checkpoint-3306
+      - key: RERANKER_DEVICE
+        value: cpu
+      - key: RERANKER_BATCH_SIZE
+        value: "8"
+      - key: RERANKER_MAX_LENGTH
+        value: "512"
+      - key: RERANKER_FAIL_OPEN
+        value: "false"
+      - key: RERANKER_MAX_CANDIDATES
+        value: "10"
+      - key: RETRIEVER_CANDIDATE_K
+        value: "10"
+      - key: ENABLE_SEMANTIC_CACHE
+        value: "false"
+      - key: SEMANTIC_CACHE_COLLECTION
+        value: semantic_cache_bge_m3_ft_v1
+      - key: INFERENCE_STRATEGY
+        value: remote_first
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: HUGGINGFACE_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
