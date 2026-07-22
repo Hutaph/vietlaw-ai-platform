@@ -1,6 +1,6 @@
 """
-Base Protocol cho Context Builder module.
-Mọi context building strategy đều phải implement interface này.
+Base protocol for context builder modules.
+Every context building strategy must implement this interface.
 """
 from typing import Protocol, List, Dict, Any, runtime_checkable
 
@@ -9,35 +9,35 @@ from langchain_core.documents import Document
 
 @runtime_checkable
 class BaseContextBuilder(Protocol):
-    """Interface cho context building strategies.
+    """Interface for context building strategies.
 
-    Dùng để ablation study: so sánh cách tổ chức context
-    ảnh hưởng thế nào đến chất lượng câu trả lời của LLM.
+    Used for ablation studies that compare how context organization affects
+    answer quality.
     """
 
     @property
     def strategy_name(self) -> str:
-        """Tên strategy để logging và tracking."""
+        """Strategy name used for logging and tracking."""
         ...
 
     def build(self, documents: List[Document]) -> str:
-        """Xây dựng chuỗi context từ danh sách Document.
+        """Build an LLM-ready context string from retrieved documents.
 
         Args:
-            documents: Danh sách Document đã retrieved/reranked.
+            documents: Retrieved or reranked documents.
 
         Returns:
-            Chuỗi context text sẵn sàng feed vào LLM prompt.
+            Context text ready to be injected into the LLM prompt.
         """
         ...
 
     def format_for_frontend(self, documents: List[Document]) -> List[Dict[str, Any]]:
-        """Định dạng dữ liệu để Frontend hiển thị.
+        """Format documents for frontend display.
 
         Args:
-            documents: Danh sách Document.
+            documents: Documents selected for the answer.
 
         Returns:
-            Danh sách dict chứa content + metadata cho UI.
+            List of dictionaries containing content and metadata for the UI.
         """
         ...

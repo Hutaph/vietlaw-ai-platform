@@ -1,6 +1,6 @@
 /**
- * Hằng số dùng chung cho toàn frontend.
- * Tách từ ChatInterface.tsx và ProviderSelector.tsx.
+ * Shared constants for the frontend.
+ * Kept outside ChatInterface.tsx and ProviderSelector.tsx for reuse.
  */
 import type { AIModel, InferenceProvider } from './types';
 
@@ -18,7 +18,7 @@ export const CHAT_STORAGE_MODE: ChatStorageMode =
     ? 'browser'
     : 'postgres';
 
-// Các lĩnh vực pháp luật được tách từ ba nhóm nghiệp vụ.
+// Legal categories surfaced in the chat category picker.
 export const LAW_CATEGORIES = [
   {
     id: ALL_LAWS_CATEGORY,
@@ -58,7 +58,7 @@ export const LAW_CATEGORIES = [
   },
 ] as const satisfies readonly LawCategory[];
 
-// Danh sách model AI hỗ trợ
+// Supported inference providers and models.
 export const AI_PROVIDERS: InferenceProvider[] = [
   { id: 'google', name: 'Google AI Studio', deploymentSupported: true },
   { id: 'huggingface', name: 'HuggingFace Router', deploymentSupported: true },
@@ -74,7 +74,7 @@ export const AI_MODELS: AIModel[] = [
   { id: 'qwen2.5:1.5b', provider: 'ollama', name: 'Qwen Mini Local', fullName: 'Qwen2.5 1.5B via Ollama' },
 ];
 
-// Model mặc định
+// Default answer model.
 export const DEFAULT_MODEL = 'gemini-3.1-flash-lite';
 
 // LocalStorage keys

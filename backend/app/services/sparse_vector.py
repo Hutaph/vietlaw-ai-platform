@@ -4,36 +4,36 @@ from typing import Dict, List, Any
 
 class SparseVectorGenerator:
     """
-    Tạo Sparse Vector (BM25/TF) cho tiếng Việt mà không cần thư viện quá nặng.
-    Băm (hash) các từ vựng thành index và tính toán tần suất (value).
+    Generate lightweight sparse vectors for Vietnamese text.
+    Tokens are hashed into Qdrant-compatible indexes with TF-style values.
     """
     
     def __init__(self):
-        # Tiền xử lý: loại bỏ dấu câu cơ bản
+        # Precompute punctuation removal for simple tokenization.
         self.punctuation_map = str.maketrans('', '', string.punctuation)
 
     def tokenize(self, text: str) -> List[str]:
-        """Tách từ cơ bản cho tiếng Việt. Tạm thời dùng split theo khoảng trắng."""
+        """Tokenize Vietnamese text with a lightweight whitespace splitter."""
         if not text:
             return []
-        # Chuyển chữ thường, xóa dấu câu
+        # Lowercase and remove basic punctuation.
         text = text.lower().translate(self.punctuation_map)
-        # Tách từ theo khoảng trắng
+        # Split on whitespace.
         tokens = text.split()
-        # Loại bỏ token rỗng
+        # Drop empty tokens.
         return [t for t in tokens if t]
 
     def _hash_token(self, token: str) -> int:
-        """Băm một chuỗi thành số nguyên 32-bit dương để dùng làm index cho Qdrant."""
-        # Dùng sha256 rồi cắt lấy 4 byte (32 bits)
+        """Hash a token into a positive 32-bit integer for Qdrant."""
+        # Use sha256 and keep the first 4 bytes.
         hash_bytes = hashlib.sha256(token.encode('utf-8')).digest()
-        # Trả về unsigned 32-bit int (phải phù hợp u32 của Qdrant)
+        # Return an unsigned 32-bit integer compatible with Qdrant.
         return int.from_bytes(hash_bytes[:4], byteorder='big')
 
     def generate_sparse_vector(self, text: str) -> Dict[str, Any]:
         """
-        Sinh vector thưa (indices và values).
-        Ở đây dùng TF (Term Frequency) làm trọng số cơ bản.
+        Generate sparse vector indexes and values.
+        This implementation uses term frequency as the base weight.
         Returns:
             {"indices": [int, ...], "values": [float, ...]}
         """
@@ -41,7 +41,7 @@ class SparseVectorGenerator:
         if not tokens:
             return {"indices": [], "values": []}
 
-        # Đếm tần suất
+        # Count token frequency.
         tf_counts = {}
         for token in tokens:
             tf_counts[token] = tf_counts.get(token, 0) + 1
@@ -52,7 +52,7 @@ class SparseVectorGenerator:
         for token, count in tf_counts.items():
             index = self._hash_token(token)
             
-            # Xử lý trường hợp hiếm: collision (2 từ hash ra cùng 1 index)
+            # Handle the rare case where two tokens hash to the same index.
             if index in indices:
                 idx_pos = indices.index(index)
                 values[idx_pos] += float(count)

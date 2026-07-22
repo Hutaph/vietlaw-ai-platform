@@ -1,7 +1,7 @@
 """
-Knowledge Base — Quản lý dữ liệu pháp luật trong RAM.
-Tách riêng từ vectorstore.py để các module khác có thể truy cập
-mà không phụ thuộc vào vector store.
+In-memory legal knowledge base.
+Separated from vectorstore.py so other modules can access legal metadata
+without depending on a vector store.
 """
 import os
 import json
@@ -14,7 +14,7 @@ from app.utils.logging import setup_logger
 
 logger = setup_logger("vietlaw.knowledge_base")
 
-# --- DỮ LIỆU TOÀN CỤC ---
+# --- Module-level state ---
 KNOWLEDGE_BASE: Dict[str, Any] = {}
 LAW_METADATA: Dict[str, Any] = {}
 
@@ -157,7 +157,7 @@ def _iter_jsonl_corpus_clauses(corpus_jsonl_path: str | Path = CORPUS_JSONL_PATH
 
 
 def determine_category(law_name: str) -> str:
-    """Phân loại văn bản theo các lựa chọn trên giao diện."""
+    """Classify a legal document into the frontend category taxonomy."""
     name_lower = law_name.lower()
 
     if "tố tụng dân sự" in name_lower:
@@ -173,7 +173,7 @@ def determine_category(law_name: str) -> str:
 
 
 def normalize_category(category: Optional[str]) -> str:
-    """Chuẩn hóa category mới và các giá trị cũ còn được client gửi lên."""
+    """Normalize current category ids and legacy client-provided values."""
     if not category:
         return ALL_LAWS_CATEGORY
     return _LEGACY_CATEGORY_ALIASES.get(category, category)
@@ -183,7 +183,7 @@ def document_matches_category(
     metadata: Dict[str, Any],
     category: Optional[str],
 ) -> bool:
-    """Kiểm tra document theo law_id, tương thích với FAISS index cũ."""
+    """Check whether a document matches a category, including legacy FAISS metadata."""
     normalized_category = normalize_category(category)
     if normalized_category == ALL_LAWS_CATEGORY:
         return True
@@ -207,7 +207,7 @@ def document_matches_category(
 
 
 def load_knowledge_base() -> None:
-    """Nạp corpus vào RAM để chatbot dựng context và metadata tài liệu."""
+    """Load the corpus into RAM for context building and document metadata."""
     global KNOWLEDGE_BASE, LAW_METADATA
     KNOWLEDGE_BASE.clear()
     LAW_METADATA.clear()
@@ -251,17 +251,17 @@ def load_knowledge_base() -> None:
 
 
 def get_clause(clause_id: str) -> Optional[Dict[str, Any]]:
-    """Truy xuất một điều khoản theo ID."""
+    """Return one clause by id."""
     return KNOWLEDGE_BASE.get(clause_id)
 
 
 def get_law_metadata(law_id: str) -> Optional[Dict[str, Any]]:
-    """Truy xuất metadata của một văn bản luật."""
+    """Return legal document metadata by law id."""
     return LAW_METADATA.get(law_id)
 
 
 def resolve_reference_data(target_id: str) -> List[Dict[str, Any]]:
-    """Tìm chính xác Khoản hoặc gom tất cả các Khoản của một Điều."""
+    """Resolve one exact clause or collect all clauses under an article."""
     if target_id in KNOWLEDGE_BASE:
         return [KNOWLEDGE_BASE[target_id]]
 

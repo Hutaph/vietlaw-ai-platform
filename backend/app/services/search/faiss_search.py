@@ -1,6 +1,6 @@
 """
-FAISS Search — Vector similarity search dùng FAISS index.
-Đây là implementation mặc định, giữ nguyên logic từ rag.py cũ.
+FAISS search implementation.
+Used for local fallback paths and legacy FAISS-backed retrieval.
 """
 from typing import List, Optional, Union
 
@@ -19,10 +19,9 @@ logger = setup_logger("vietlaw.search.faiss")
 
 
 class FAISSSearcher:
-    """Vector similarity search dùng FAISS.
+    """Vector similarity search using FAISS.
 
-    Sử dụng MMR (Maximal Marginal Relevance) để cân bằng
-    giữa relevance và diversity trong kết quả.
+    Uses MMR to balance relevance and diversity.
     """
 
     def __init__(
@@ -41,7 +40,7 @@ class FAISSSearcher:
 
     @property
     def vectorstore(self) -> FAISS:
-        """Trả về FAISS vectorstore — cần cho indexing."""
+        """Return the FAISS vector store used for indexing and retrieval."""
         return self._vectorstore
 
     def _lazy_load_vectorstore(self, api_key: Optional[str] = None) -> None:
@@ -56,14 +55,14 @@ class FAISSSearcher:
             try:
                 embedding = _get_embedding(api_key)
                 if embedding is not None:
-                    logger.info("Lazy loading FAISS Index từ ổ cứng để dùng làm fallback...")
+                    logger.info("Lazy loading FAISS index from disk for fallback retrieval...")
                     self._vectorstore = FAISS.load_local(
                         FAISS_INDEX_PATH,
                         embedding.langchain_embeddings,
                         allow_dangerous_deserialization=True
                     )
             except Exception as e:
-                logger.warning("Không thể lazy load FAISS index: %s", e)
+                logger.warning("Could not lazy load FAISS index: %s", e)
     def search(
         self,
         query: Union[str, List[str]],
@@ -71,7 +70,7 @@ class FAISSSearcher:
         category: Optional[str] = None,
         api_key: Optional[str] = None,
     ) -> List[Document]:
-        """Tìm kiếm bằng MMR trên FAISS index."""
+        """Search the FAISS index with MMR."""
         self._lazy_load_vectorstore(api_key)
         if self._vectorstore is None:
             logger.warning("FAISS vectorstore is not initialized; returning empty results")
@@ -116,7 +115,7 @@ class FAISSSearcher:
         category: Optional[str] = None,
         api_key: Optional[str] = None,
     ) -> List[Document]:
-        """Async version — dùng trong FastAPI endpoint."""
+        """Async variant used by FastAPI endpoints."""
         self._lazy_load_vectorstore(api_key)
         if self._vectorstore is None:
             logger.warning("FAISS vectorstore is not initialized; returning empty results")

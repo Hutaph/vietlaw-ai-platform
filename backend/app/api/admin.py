@@ -35,7 +35,7 @@ def _get_paired_logs():
 
 @router.get("/analytics/logs")
 async def get_logs(page: int = 1, limit: int = 50):
-    """Lấy lịch sử chat có phân trang."""
+    """Return paginated chat history."""
     logs = _get_paired_logs()
     
     start = (page - 1) * limit
@@ -50,7 +50,7 @@ async def get_logs(page: int = 1, limit: int = 50):
 
 @router.get("/analytics/stats")
 async def get_stats():
-    """Lấy thống kê cơ bản."""
+    """Return basic chat analytics."""
     logs = _get_paired_logs()
     
     stats_by_date = {}

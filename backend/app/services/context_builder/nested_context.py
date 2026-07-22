@@ -1,6 +1,6 @@
 """
-Nested Context Builder — Xây dựng context đệ quy 2 cấp.
-Đây là strategy mặc định, giữ nguyên logic từ rag.py cũ.
+Nested Context Builder.
+Default strategy that preserves the legacy two-level reference expansion.
 """
 from typing import List, Dict, Any
 
@@ -16,13 +16,13 @@ logger = setup_logger("vietlaw.context_builder.nested")
 
 
 class NestedContextBuilder:
-    """Xây dựng context đệ quy 2 cấp với cross-reference resolution.
+    """Build two-level context with legal cross-reference resolution.
 
-    Cấp 1: Nội dung đầy đủ của điều khoản được dẫn chiếu
-    Cấp 2: Tóm tắt của các dẫn chiếu bậc 2
+    Level 1: full content of directly referenced clauses.
+    Level 2: summary text for second-order references.
 
-    Đây là chiến lược tối ưu cho văn bản pháp luật Việt Nam
-    vì các điều khoản thường dẫn chiếu chéo lẫn nhau.
+    This suits Vietnamese legal documents where clauses often reference each
+    other.
     """
 
     @property
@@ -30,7 +30,7 @@ class NestedContextBuilder:
         return "nested_2_level"
 
     def build(self, documents: List[Document]) -> str:
-        """Xây dựng chuỗi ngữ cảnh đệ quy 2 Cấp."""
+        """Build a two-level recursive legal context string."""
         context_blocks = []
         used_law_ids = set()
 
@@ -55,7 +55,7 @@ class NestedContextBuilder:
             chapter_str = f"Chương {chapter_val} ({chapter_title})" if chapter_title else f"Chương {chapter_val}"
             article_str = f"Điều {article_val} ({article_title})" if article_title else f"Điều {article_val}"
 
-            # [0] CĂN CỨ CHÍNH
+            # [0] Main legal basis.
             block = f"[CĂN CỨ ID: {clause_id}]\n"
             block += f"- Nguồn: {law_name} | {chapter_str} | {article_str} | Khoản {clause_val}\n"
             block += f"- Nội dung: \"{clause_data['content']}\"\n"
@@ -68,11 +68,11 @@ class NestedContextBuilder:
                     target_id_1 = ref1.get("target_id", "")
                     anchor_text_1 = ref1.get("anchor_text", target_id_1)
 
-                    # Tìm dữ liệu của Cấp 1
+                    # Resolve level-1 reference data.
                     resolved_clauses_1 = resolve_reference_data(target_id_1)
 
                     if resolved_clauses_1:
-                        # [1] DẪN CHIẾU CẤP 1 (Lấy toàn bộ Content)
+                        # [1] Level-1 reference with full content.
                         content_1 = " ".join([c["content"] for c in resolved_clauses_1])
                         target_law_id_1 = resolved_clauses_1[0]["law_id"]
                         target_law_name_1 = LAW_METADATA[target_law_id_1]["law_name"]
@@ -81,12 +81,12 @@ class NestedContextBuilder:
                         block += f"   + [Cấp 1] Tại cụm từ '{anchor_text_1}' ({target_law_name_1}):\n"
                         block += f"     Nội dung: \"{content_1}\"\n"
 
-                        # [2] DẪN CHIẾU CẤP 2 (Chỉ lấy Tóm tắt)
+                        # [2] Level-2 references with summaries only.
                         refs_level_2 = []
                         for c in resolved_clauses_1:
                             refs_level_2.extend(c.get("cross_references", []))
 
-                        # Lọc trùng lặp và tránh trỏ ngược về chính nó
+                        # Deduplicate and avoid references that point back to the source.
                         seen_targets = set()
                         unique_refs_level_2 = []
                         for r2 in refs_level_2:
@@ -103,13 +103,13 @@ class NestedContextBuilder:
                                 block += f"       -> [Cấp 2] Có liên quan đến '{anchor_text_2}': (Tóm tắt) {summary_text_2}\n"
 
                     else:
-                        # Fallback nếu không quét được trong RAM
+                        # Fallback when the reference cannot be resolved in memory.
                         summary_text_1 = ref1.get("description_summary") or ref1.get("description", "")
                         block += f"   + [Cấp 1] Tại cụm từ '{anchor_text_1}': (Tóm tắt) {summary_text_1}\n"
 
             context_blocks.append(block)
 
-        # Tạo phần Header tổng hợp thông tin văn bản
+        # Add a header that summarizes all source laws used in this context.
         header = "--- THÔNG TIN CÁC VĂN BẢN ĐƯỢC SỬ DỤNG ---\n"
         for l_id in used_law_ids:
             meta = LAW_METADATA.get(l_id)
@@ -157,7 +157,7 @@ class NestedContextBuilder:
         return header + "\n\n".join(context_blocks)
 
     def format_for_frontend(self, documents: List[Document]) -> List[Dict[str, Any]]:
-        """Định dạng lại dữ liệu trả về để Frontend dễ dàng hiển thị lên UI."""
+        """Format retrieved documents for frontend display."""
         formatted = []
         for doc in documents:
             c_id = doc.metadata.get("id")

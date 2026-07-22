@@ -1,28 +1,27 @@
 """
-Base Protocol cho Embedding module.
-Mọi embedding strategy đều phải implement interface này.
+Base protocol for embedding modules.
+Every embedding strategy must implement this interface.
 """
 from typing import Protocol, List, runtime_checkable
 
 
 @runtime_checkable
 class BaseEmbedding(Protocol):
-    """Interface cho embedding models.
+    """Interface for embedding models.
 
-    Dùng để ablation study: swap giữa các embedding model
-    (HuggingFace API, local SentenceTransformer, OpenAI, v.v.)
-    mà không cần thay đổi pipeline code.
+    Used for ablation studies that swap embedding models without changing the
+    pipeline code.
     """
 
     @property
     def model_name(self) -> str:
-        """Tên model để logging và tracking."""
+        """Model name used for logging and tracking."""
         ...
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
-        """Nhúng nhiều văn bản cùng lúc (dùng khi indexing)."""
+        """Embed multiple documents at once for indexing."""
         ...
 
     def embed_query(self, text: str) -> List[float]:
-        """Nhúng một câu hỏi (dùng khi search)."""
+        """Embed one query for retrieval."""
         ...

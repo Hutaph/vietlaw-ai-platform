@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 class FallbackEmbedding(BaseEmbedding):
     """
-    Wrapper để tự động fallback sang mô hình embedding dự phòng nếu mô hình chính bị lỗi.
+    Wrapper that falls back to a secondary embedding provider when primary fails.
     """
     def __init__(self, primary: BaseEmbedding, secondary: BaseEmbedding):
         self.primary = primary

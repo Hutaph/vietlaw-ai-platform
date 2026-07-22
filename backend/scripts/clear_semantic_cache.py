@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-Script để xóa (flush) Semantic Cache khi Knowledge Base được cập nhật.
-Chạy bằng lệnh: python -m scripts.clear_semantic_cache
+Flush the semantic cache after the knowledge base changes.
+Run with: python -m scripts.clear_semantic_cache
 """
 
 import sys

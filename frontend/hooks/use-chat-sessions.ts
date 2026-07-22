@@ -1,6 +1,6 @@
 /**
- * Hook quản lý toàn bộ logic chat sessions.
- * Tách từ ChatInterface.tsx để component chỉ lo render UI.
+ * Hook that owns chat session state and persistence.
+ * This keeps ChatInterface focused on rendering and request orchestration.
  */
 'use client';
 
@@ -107,11 +107,11 @@ export function useChatSessions() {
     ? messagesBySession[currentSessionId] || []
     : [];
 
-  // --- Tạo session mới ---
+  // --- Create a new session ---
   const handleNewChat = useCallback(() => {
     const { currentSessionId, messagesBySession } = stateRef.current;
     
-    // Nếu đang ở session rỗng rồi thì không tạo thêm
+    // Reuse the current empty session instead of creating another placeholder.
     if (currentSessionId && (!messagesBySession[currentSessionId] || messagesBySession[currentSessionId].length === 0)) {
       return;
     }
@@ -122,7 +122,7 @@ export function useChatSessions() {
     setMessagesBySession(prev => ({ ...prev, [newId]: [] }));
   }, []);
 
-  // --- Chọn session ---
+  // --- Select a session ---
   const handleSelectSession = useCallback(async (id: string) => {
     const { currentSessionId, messagesBySession } = stateRef.current;
     if (id === currentSessionId) return;
@@ -165,25 +165,23 @@ export function useChatSessions() {
     }
   }, []);
 
-  // --- Xóa session ---
+  // --- Delete a session ---
   const handleDeleteSession = useCallback((id: string) => {
     if (CHAT_STORAGE_MODE === 'postgres') {
-    // Gọi API xóa ở backend không đồng bộ
-    fetch(`/api/chat/session/${id}`, { method: 'DELETE' })
-      .then(res => {
-        if (!res.ok) console.warn(`[Delete Session] Backend trả về ${res.status} cho session ${id}`);
-      })
-      .catch(err => {
-        warnRecoverableSessionsIssue(`Delete session API is unavailable; removed local session ${id}.`, err);
-      });
-
-    // Cập nhật đồng thời cả sessions và messages trong cùng một lần render
+      // Fire-and-forget backend deletion; the local UI updates immediately.
+      fetch(`/api/chat/session/${id}`, { method: 'DELETE' })
+        .then(res => {
+          if (!res.ok) console.warn(`[Delete Session] Backend returned ${res.status} for session ${id}`);
+        })
+        .catch(err => {
+          warnRecoverableSessionsIssue(`Delete session API is unavailable; removed local session ${id}.`, err);
+        });
     }
 
     const { currentSessionId, sessions, messagesBySession } = stateRef.current;
     const remaining = sessions.filter(s => s.id !== id);
 
-    // Xóa messages của session bị xóa
+    // Remove messages for the deleted session.
     const nextMessages = { ...messagesBySession };
     delete nextMessages[id];
     setMessagesBySession(nextMessages);
@@ -194,7 +192,7 @@ export function useChatSessions() {
         localStorage.setItem(STORAGE_KEYS.activeSessionId, remaining[0].id);
         setSessions(remaining);
       } else {
-        // Tạo ID mới nếu không còn session nào, nhưng KHÔNG add vào sessions list
+        // Create a fresh empty session without adding it to the visible history.
         const newId = createSessionId();
         nextMessages[newId] = [];
         setMessagesBySession({ ...nextMessages });
@@ -207,7 +205,7 @@ export function useChatSessions() {
     }
   }, []);
 
-  // --- Thêm message vào session hiện tại ---
+  // --- Add a message to the current session ---
   const addMessage = useCallback((message: Message) => {
     if (!currentSessionId) return;
     setMessagesBySession(prev => ({
@@ -233,7 +231,7 @@ export function useChatSessions() {
     });
   }, [currentSessionId]);
 
-  // --- Cập nhật message ---
+  // --- Update a message ---
   const updateMessage = useCallback((sessionId: string, messageId: string, updates: Partial<Message>) => {
     setMessagesBySession(prev => {
       const sessionMessages = prev[sessionId];
@@ -245,7 +243,7 @@ export function useChatSessions() {
     });
   }, []);
 
-  // --- Cập nhật title session ---
+  // --- Update the current session title ---
   const updateSessionTitle = useCallback((title: string) => {
     if (!currentSessionId) return;
     setSessions(prev =>
@@ -257,7 +255,7 @@ export function useChatSessions() {
     );
   }, [currentSessionId]);
 
-  // --- Load từ DB/API khi mount ---
+  // --- Load sessions from DB/API on mount ---
   useEffect(() => {
     setIsMounted(true);
 
@@ -380,11 +378,11 @@ export function useChatSessions() {
     loadFromDB();
   }, [handleNewChat]);
 
-  // --- Lưu vào localStorage khi thay đổi ---
+  // --- Persist valid local state changes ---
   useEffect(() => {
     if (isMounted) {
       const validSessions = sessions.filter(s => messagesBySession[s.id] && messagesBySession[s.id].length > 0);
-      // Chỉ lưu messages của các session hợp lệ để tránh tích lũy orphan data
+      // Store only valid session messages to avoid orphaned local history.
       const validMessages: Record<string, Message[]> = {};
       validSessions.forEach(s => { validMessages[s.id] = messagesBySession[s.id]; });
       localStorage.setItem(STORAGE_KEYS.sessions, JSON.stringify(validSessions));

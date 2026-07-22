@@ -14,7 +14,7 @@ router = APIRouter()
 @router.get("")
 @router.get("/")
 async def list_documents():
-    """Lấy danh sách tất cả các tài liệu đã được nạp."""
+    """Return all loaded legal documents."""
     docs = []
     for law_id, meta in LAW_METADATA.items():
         docs.append({
@@ -28,7 +28,7 @@ async def list_documents():
 
 @router.get("/{law_id}/chunks")
 async def get_document_chunks(law_id: str):
-    """Lấy danh sách các chunk của một tài liệu."""
+    """Return chunks for one legal document."""
     chunks = []
     for chunk_id, chunk_data in KNOWLEDGE_BASE.items():
         if chunk_data.get("law_id") == law_id:
@@ -42,7 +42,7 @@ async def get_document_chunks(law_id: str):
 
 @router.post("/upload")
 async def upload_document(files: List[UploadFile] = File(...)):
-    """Tải lên nhiều tài liệu mới (.txt), tự động chunking và lưu vào hệ thống."""
+    """Upload text documents, chunk them, and store them in the active backend."""
     for file in files:
         if not file.filename.endswith(".txt"):
             raise HTTPException(status_code=400, detail=f"File {file.filename} không đúng định dạng .txt")
@@ -150,7 +150,7 @@ async def upload_document(files: List[UploadFile] = File(...)):
                 logger.info(f"Ingested document {doc_id} to FAISS")
         except Exception as e:
             logger.error(f"Error embedding uploaded document {doc_id}: {e}")
-            # Even if embedding fails, it's saved in JSON and RAM
+            # Even if embedding fails, the document has been saved in JSON and RAM.
             
         total_chunks += len(chunks)
         doc_ids.append(doc_id)
@@ -160,7 +160,7 @@ async def upload_document(files: List[UploadFile] = File(...)):
 
 @router.delete("/{law_id}")
 async def delete_document(law_id: str):
-    """Xóa tài liệu khỏi hệ thống."""
+    """Delete a document from memory, disk, and the configured storage backend."""
     # 1. Remove from RAM
     if law_id in LAW_METADATA:
         del LAW_METADATA[law_id]

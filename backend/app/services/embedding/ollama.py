@@ -1,5 +1,5 @@
 """
-Ollama Embedding — tạo embedding bằng Ollama chạy trên máy local.
+Ollama embedding provider for local embedding models.
 """
 import json
 from typing import List, Union
@@ -19,7 +19,7 @@ logger = setup_logger("vietlaw.embedding.ollama")
 
 
 class OllamaEmbedding(Embeddings):
-    """LangChain-compatible embedding provider dùng Ollama REST API."""
+    """LangChain-compatible embedding provider backed by the Ollama REST API."""
 
     def __init__(
         self,
@@ -42,7 +42,7 @@ class OllamaEmbedding(Embeddings):
 
     @property
     def langchain_embeddings(self) -> "OllamaEmbedding":
-        """FAISS chỉ cần object có embed_documents và embed_query."""
+        """Return self because FAISS needs embed_documents and embed_query."""
         return self
 
     def _embed(self, inputs: Union[str, List[str]]) -> List[List[float]]:
@@ -81,7 +81,7 @@ class OllamaEmbedding(Embeddings):
         return embeddings
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
-        """Nhúng một batch văn bản."""
+        """Embed a batch of documents."""
         if not texts:
             return []
 
@@ -93,7 +93,7 @@ class OllamaEmbedding(Embeddings):
         return embeddings
 
     def embed_query(self, text: str) -> List[float]:
-        """Nhúng một câu truy vấn bằng cùng model dùng khi indexing."""
+        """Embed a query with the same model used during indexing."""
         embeddings = self._embed(text)
         if not embeddings:
             raise RuntimeError("Ollama không trả về vector cho câu truy vấn.")

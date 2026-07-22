@@ -1,10 +1,10 @@
 """
-Điểm vào chính của backend — FastAPI Application Factory.
-File này chỉ chịu trách nhiệm:
-  1. Tạo FastAPI app
-  2. Đăng ký middleware
-  3. Đăng ký routers
-  4. Khởi tạo RAG Pipeline khi startup
+Main backend entrypoint and FastAPI application factory.
+This file is responsible for:
+  1. Creating the FastAPI app.
+  2. Registering middleware.
+  3. Registering routers.
+  4. Scheduling storage and RAG pipeline initialization.
 """
 import asyncio
 from pathlib import Path
@@ -164,7 +164,7 @@ def _check_qdrant() -> dict:
 
 
 def create_app() -> FastAPI:
-    """Application factory — tạo và cấu hình FastAPI app."""
+    """Create and configure the FastAPI application."""
     application = FastAPI(title="VietLaw RAG Backend")
 
     # --- CORS Middleware ---
@@ -176,7 +176,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    # --- Đăng ký Routers ---
+    # --- Register routers ---
     application.include_router(chat_router)
     application.include_router(documents_router, prefix="/api/documents", tags=["Documents"])
     application.include_router(admin_router, prefix="/api/admin", tags=["Admin"])
@@ -314,7 +314,7 @@ def create_app() -> FastAPI:
     return application
 
 
-# Tạo app instance
+# Create the application instance.
 app = create_app()
 
 # --- KHỞI CHẠY SERVER ---
