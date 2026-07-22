@@ -28,7 +28,7 @@ export function AdvancedSettings({ config, setConfig }: AdvancedSettingsProps) {
         className="flex items-center justify-center rounded-xl border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800 px-3 py-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-slate-700 active:bg-gray-200 dark:active:bg-slate-600"
       >
         <span className="text-[12px] font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose-600">
             <line x1="4" y1="21" x2="4" y2="14"></line>
             <line x1="4" y1="10" x2="4" y2="3"></line>
             <line x1="12" y1="21" x2="12" y2="12"></line>
@@ -46,14 +46,13 @@ export function AdvancedSettings({ config, setConfig }: AdvancedSettingsProps) {
       {isOpen && (
         <div className="absolute bottom-full mb-2 left-0 w-64 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-xl shadow-gray-200/50 dark:shadow-none rounded-xl py-3 px-4 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
           <div className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 border-b border-gray-50 dark:border-slate-800 pb-2 mb-3">
-            Cấu hình LLM & Tìm kiếm
+            Cấu hình mô hình và tìm kiếm
           </div>
           
           <div className="space-y-4">
-            {/* Temperature */}
             <div className="space-y-1.5">
               <div className="flex justify-between items-center">
-                <label className="text-[12px] font-medium text-gray-700 dark:text-gray-300">Temperature</label>
+                <label className="text-[12px] font-medium text-gray-700 dark:text-gray-300">Độ linh hoạt</label>
                 <span className="text-[10px] text-gray-500 font-mono">{config.temperature.toFixed(2)}</span>
               </div>
               <input 
@@ -61,15 +60,14 @@ export function AdvancedSettings({ config, setConfig }: AdvancedSettingsProps) {
                 min="0" max="1" step="0.05"
                 value={config.temperature}
                 onChange={(e) => setConfig({ ...config, temperature: parseFloat(e.target.value) })}
-                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-emerald-500"
+                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-rose-600"
               />
               <p className="text-[10px] text-gray-400">Điều chỉnh độ sáng tạo của câu trả lời.</p>
             </div>
 
-            {/* Max Tokens */}
             <div className="space-y-1.5">
               <div className="flex justify-between items-center">
-                <label className="text-[12px] font-medium text-gray-700 dark:text-gray-300">Max Tokens</label>
+                <label className="text-[12px] font-medium text-gray-700 dark:text-gray-300">Độ dài tối đa</label>
                 <span className="text-[10px] text-gray-500 font-mono">{config.maxTokens}</span>
               </div>
               <input 
@@ -77,15 +75,14 @@ export function AdvancedSettings({ config, setConfig }: AdvancedSettingsProps) {
                 min="100" max="4000" step="100"
                 value={config.maxTokens}
                 onChange={(e) => setConfig({ ...config, maxTokens: parseInt(e.target.value) })}
-                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-emerald-500"
+                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-rose-600"
               />
-              <p className="text-[10px] text-gray-400">Giới hạn độ dài tối đa (số từ) của câu trả lời.</p>
+              <p className="text-[10px] text-gray-400">Giới hạn độ dài tối đa của câu trả lời.</p>
             </div>
 
-            {/* Top K */}
             <div className="space-y-1.5">
               <div className="flex justify-between items-center">
-                <label className="text-[12px] font-medium text-gray-700 dark:text-gray-300">Số tài liệu trích xuất (Top K)</label>
+                <label className="text-[12px] font-medium text-gray-700 dark:text-gray-300">Số căn cứ sử dụng</label>
                 <span className="text-[10px] text-gray-500 font-mono">{config.topK}</span>
               </div>
               <input 
@@ -93,16 +90,16 @@ export function AdvancedSettings({ config, setConfig }: AdvancedSettingsProps) {
                 min="1" max="20" step="1"
                 value={config.topK}
                 onChange={(e) => setConfig({ ...config, topK: parseInt(e.target.value) })}
-                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-emerald-500"
+                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-rose-600"
               />
-              <p className="text-[10px] text-gray-400">Số lượng điều luật tối đa để tham chiếu.</p>
+              <p className="text-[10px] text-gray-400">Số điều khoản tối đa đưa vào câu trả lời.</p>
             </div>
           </div>
           <div className="mt-4 pt-3 border-t border-gray-100 dark:border-slate-800">
             <Link
               href="/admin#settings"
               onClick={() => setIsOpen(false)}
-              className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+              className="text-[11px] font-semibold text-rose-600 dark:text-rose-300 hover:text-rose-700 dark:hover:text-rose-200"
             >
               Mở cấu hình đầy đủ →
             </Link>

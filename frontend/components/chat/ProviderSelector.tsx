@@ -25,7 +25,7 @@ export function ProviderSelector({ model, setModel }: ModelSelectorProps) {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center rounded-xl border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800 px-3 py-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-slate-700 active:bg-gray-200 dark:active:bg-slate-600"
       >
-        <Cpu className="w-3.5 h-3.5 text-emerald-600 mr-2" />
+        <Cpu className="w-3.5 h-3.5 text-rose-600 mr-2" />
         <div className="flex items-center gap-1">
           <span className="text-[12px] font-bold text-gray-700 dark:text-gray-300">
             {selectedProvider?.name ?? selectedModel.provider}: {selectedModel.name}
@@ -49,7 +49,7 @@ export function ProviderSelector({ model, setModel }: ModelSelectorProps) {
               }}
               className={`w-full text-left px-3 py-2.5 text-[12px] font-medium flex items-center justify-between transition-colors ${
                 model === m.id 
-                  ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-500/10' 
+                  ? 'text-rose-700 dark:text-rose-300 bg-rose-50/50 dark:bg-rose-500/10'
                   : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-800'
               }`}
             >
@@ -59,7 +59,7 @@ export function ProviderSelector({ model, setModel }: ModelSelectorProps) {
                   {AI_PROVIDERS.find(provider => provider.id === m.provider)?.name ?? m.provider}
                 </span>
               </span>
-              {model === m.id && <Check className="w-3.5 h-3.5 text-emerald-600" />}
+              {model === m.id && <Check className="w-3.5 h-3.5 text-rose-600" />}
             </button>
           ))}
         </div>

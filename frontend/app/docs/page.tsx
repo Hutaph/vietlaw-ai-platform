@@ -31,7 +31,7 @@ export default function DocumentDashboard() {
 
       setDocuments(data.documents);
     } catch (e: unknown) {
-      console.error('Failed to fetch documents', e);
+      console.error('Không thể tải kho tài liệu', e);
       setLoadError(e instanceof Error ? e.message : 'Không thể tải kho tài liệu.');
     } finally {
       setIsLoading(false);
@@ -53,18 +53,18 @@ export default function DocumentDashboard() {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-300">
               <BookOpen className="w-4 h-4" />
             </div>
             <div>
-              <h1 className="text-[15px] font-bold text-gray-800 dark:text-gray-100 leading-tight">Kho Tài Liệu</h1>
+              <h1 className="text-[15px] font-bold text-gray-800 dark:text-gray-100 leading-tight">Kho tài liệu</h1>
               <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400">Quản lý & trực quan hóa dữ liệu pháp luật</p>
             </div>
           </div>
         </div>
         <button
           onClick={() => setIsUploadOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[13px] font-semibold rounded-xl transition-all shadow-sm active:scale-95"
+          className="flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-[13px] font-semibold rounded-xl transition-all shadow-sm shadow-rose-600/15 active:scale-95"
         >
           <Upload className="w-4 h-4" />
           Tải tài liệu lên
@@ -98,7 +98,7 @@ export default function DocumentDashboard() {
                 <button
                   type="button"
                   onClick={fetchDocuments}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition-colors"
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-xl transition-colors"
                 >
                   Thử lại
                 </button>
@@ -113,7 +113,7 @@ export default function DocumentDashboard() {
           </div>
         </div>
         
-        {/* Slide-over panel for chunks */}
+        {/* Bảng chi tiết các đoạn dữ liệu */}
         <div className={`absolute top-0 right-0 h-full bg-white dark:bg-slate-900 border-l border-gray-200 dark:border-slate-800 shadow-2xl transition-transform duration-300 w-[400px] flex flex-col ${selectedDocId ? 'translate-x-0' : 'translate-x-full'}`}>
           {selectedDocId && (
             <ChunkViewer 

@@ -6,7 +6,7 @@ import { FileText, ChevronRight, Trash2, Scale } from 'lucide-react';
 interface Document {
   id: string;
   name: string;
-  summary: string;
+  summary?: string;
   category: string;
   metadata?: {
     category?: string;
@@ -30,12 +30,12 @@ export default function DocumentList({ documents: propDocuments, selectedId, onS
       try {
         const res = await fetch('/api/documents');
         if (!res.ok) {
-          throw new Error(`Failed to fetch documents: ${res.statusText}`);
+          throw new Error(`Không thể tải danh sách tài liệu: ${res.statusText}`);
         }
         const data = await res.json();
         setFetchedDocuments(data.documents || []);
       } catch (error) {
-        console.error('Error fetching docs:', error);
+        console.error('Không thể tải danh sách tài liệu:', error);
       } finally {
         setLoading(false);
       }
@@ -64,8 +64,6 @@ export default function DocumentList({ documents: propDocuments, selectedId, onS
         if (!propDocuments) {
           setFetchedDocuments(fetchedDocuments.filter(doc => doc.id !== id));
         } else {
-          // If using propDocuments, the parent should refetch, but we can't easily trigger it here.
-          // Better to use window reload or a callback in a real app.
           window.location.reload();
         }
       } else {
@@ -105,12 +103,12 @@ export default function DocumentList({ documents: propDocuments, selectedId, onS
           }}
           className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col group ${
             selectedId === doc.id 
-              ? 'border-indigo-500 ring-1 ring-indigo-500 shadow-sm bg-white dark:bg-slate-900' 
-              : 'bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-md hover:-translate-y-1'
+              ? 'border-rose-400 ring-1 ring-rose-400/80 shadow-sm bg-white dark:bg-slate-900'
+              : 'bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800 hover:border-rose-200 dark:hover:border-rose-900/70 hover:shadow-md hover:-translate-y-1'
           }`}
         >
           <div className="flex justify-between items-start mb-4">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+            <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center text-rose-600 dark:text-rose-300">
               {doc.metadata?.category ? <Scale className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
             </div>
             <div className="flex items-center gap-2">
@@ -146,13 +144,21 @@ export default function DocumentList({ documents: propDocuments, selectedId, onS
           </h3>
           
           <p className="text-[12px] text-gray-500 dark:text-gray-400 flex-1 line-clamp-3 mb-4">
-            {doc.summary || 'Không có bản tóm tắt.'}
+            {doc.id}
           </p>
           
-          <div className="mt-auto pt-4 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between text-indigo-600 dark:text-indigo-400 group">
-            <span className="text-[12px] font-medium">Xem chi tiết chunk</span>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              if (onSelectDoc) onSelectDoc(doc);
+              if (onSelect) onSelect(doc.id);
+            }}
+            className="mt-auto pt-4 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between text-slate-500 transition-colors hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-300 text-left"
+          >
+            <span className="text-[12px] font-medium">Xem các đoạn dữ liệu</span>
             <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-          </div>
+          </button>
         </div>
       ))}
     </div>
