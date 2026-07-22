@@ -9,7 +9,13 @@ interface ChunkViewerProps {
 interface Chunk {
   id: string;
   content: string;
-  position: any;
+  position?: {
+    article?: string | null;
+    chapter?: string | null;
+    clause?: string | null;
+    point?: string | null;
+    section?: string | null;
+  };
 }
 
 export default function ChunkViewer({ lawId, onClose }: ChunkViewerProps) {
@@ -43,6 +49,31 @@ export default function ChunkViewer({ lawId, onClose }: ChunkViewerProps) {
       fetchChunks();
     }
   }, [lawId]);
+
+  const getReadableChunkId = (id: string) => {
+    const paragraphMatch = id.match(/:p(\d+)$/i);
+    if (paragraphMatch) return `Đoạn ${paragraphMatch[1]}`;
+
+    const articleMatch = id.match(/article-(\d+)/i);
+    if (articleMatch) return `Điều ${articleMatch[1]}`;
+
+    return 'Đoạn dữ liệu';
+  };
+
+  const getReadablePosition = (chunk: Chunk) => {
+    const position = chunk.position;
+    if (!position) return '';
+
+    const parts = [
+      position.chapter ? `Chương ${position.chapter}` : '',
+      position.section ? `Mục ${position.section}` : '',
+      position.article ? `Điều ${position.article}` : '',
+      position.clause ? `Khoản ${position.clause}` : '',
+      position.point ? `Điểm ${position.point}` : '',
+    ].filter(Boolean);
+
+    return parts.join(', ');
+  };
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-slate-900 shadow-2xl">
@@ -94,30 +125,35 @@ export default function ChunkViewer({ lawId, onClose }: ChunkViewerProps) {
             <div className="text-[11px] font-medium text-gray-500 mb-6 pl-12">
               Tìm thấy <span className="text-indigo-600 dark:text-indigo-400 font-bold">{chunks.length}</span> đoạn dữ liệu
             </div>
-            {chunks.map(chunk => (
-              <div key={chunk.id} className="relative pl-12">
-                <div className="absolute left-[13px] top-4 w-3 h-3 rounded-full border-2 border-indigo-600 dark:border-indigo-400 bg-white dark:bg-slate-900 z-10 shadow-sm ring-4 ring-slate-50 dark:ring-slate-950"></div>
-                
-                <div className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-gray-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow hover:border-indigo-300 dark:hover:border-indigo-700 group">
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-1.5 text-[11px] font-mono text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
-                      <Hash className="w-3 h-3" />
-                      {chunk.id.split('_').pop() || chunk.id}
+            {chunks.map(chunk => {
+              const positionLabel = getReadablePosition(chunk);
+
+              return (
+                <div key={chunk.id} className="relative pl-12">
+                  <div className="absolute left-[13px] top-4 w-3 h-3 rounded-full border-2 border-indigo-600 dark:border-indigo-400 bg-white dark:bg-slate-900 z-10 shadow-sm ring-4 ring-slate-50 dark:ring-slate-950"></div>
+                  
+                  <div className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-gray-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow hover:border-indigo-300 dark:hover:border-indigo-700 group">
+                    <div className="mb-3 flex flex-wrap items-center gap-2">
+                      <div
+                        className="inline-flex min-w-0 items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                        title={chunk.id}
+                      >
+                        <Hash className="w-3 h-3" />
+                        <span className="truncate">{getReadableChunkId(chunk.id)}</span>
+                      </div>
+                      {positionLabel && (
+                        <span className="inline-flex max-w-full rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold leading-4 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
+                          {positionLabel}
+                        </span>
+                      )}
                     </div>
-                    {chunk.position && Object.keys(chunk.position).length > 0 && (
-                      <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-100 dark:border-emerald-500/20">
-                        {chunk.position.chapter ? `Chương ${chunk.position.chapter}` : ''}
-                        {chunk.position.section ? ` - Mục ${chunk.position.section}` : ''}
-                        {chunk.position.clause ? ` - Điều/Khoản ${chunk.position.clause}` : ''}
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-[13px] text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-                    {chunk.content}
+                    <div className="text-[13px] text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                      {chunk.content}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
