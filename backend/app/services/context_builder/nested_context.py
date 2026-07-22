@@ -29,6 +29,40 @@ class NestedContextBuilder:
     def strategy_name(self) -> str:
         return "nested_2_level"
 
+    def _clause_from_document(self, doc: Document) -> Dict[str, Any]:
+        """Return clause data from memory or fall back to Qdrant payload metadata."""
+        metadata = doc.metadata or {}
+        clause_id = metadata.get("id")
+        clause_data = KNOWLEDGE_BASE.get(clause_id)
+        if clause_data:
+            return clause_data
+
+        position = metadata.get("position") or {}
+        if not isinstance(position, dict):
+            position = {}
+
+        law_id = metadata.get("law_id") or metadata.get("source") or metadata.get("law") or ""
+        law_name = (
+            metadata.get("law_name")
+            or metadata.get("source")
+            or metadata.get("law")
+            or law_id
+            or "Văn bản pháp luật"
+        )
+
+        return {
+            "law_id": law_id,
+            "position": position,
+            "content": doc.page_content or "",
+            "cross_references": [],
+            "_fallback_law_name": law_name,
+        }
+
+    def _law_name(self, clause_data: Dict[str, Any]) -> str:
+        law_id = clause_data.get("law_id")
+        law_meta = LAW_METADATA.get(law_id, {}) if law_id else {}
+        return law_meta.get("law_name") or clause_data.get("_fallback_law_name") or law_id or "Văn bản pháp luật"
+
     def build(self, documents: List[Document]) -> str:
         """Build a two-level recursive legal context string."""
         context_blocks = []
@@ -36,15 +70,16 @@ class NestedContextBuilder:
 
         for i, doc in enumerate(documents):
             clause_id = doc.metadata.get("id")
-            clause_data = KNOWLEDGE_BASE.get(clause_id)
-            if not clause_data:
+            clause_data = self._clause_from_document(doc)
+            if not clause_data.get("content"):
                 continue
 
-            law_id = clause_data["law_id"]
-            used_law_ids.add(law_id)
+            law_id = clause_data.get("law_id")
+            if law_id:
+                used_law_ids.add(law_id)
 
-            pos = clause_data["position"]
-            law_name = LAW_METADATA[law_id]["law_name"]
+            pos = clause_data.get("position", {})
+            law_name = self._law_name(clause_data)
 
             chapter_val = pos.get('chapter', '')
             chapter_title = pos.get('chapter_title', '')
@@ -126,14 +161,15 @@ class NestedContextBuilder:
 
         for doc in documents:
             clause_id = doc.metadata.get("id")
-            clause_data = KNOWLEDGE_BASE.get(clause_id)
-            if not clause_data:
+            clause_data = self._clause_from_document(doc)
+            if not clause_data.get("content"):
                 continue
 
-            law_id = clause_data["law_id"]
-            used_law_ids.add(law_id)
-            pos = clause_data["position"]
-            law_name = LAW_METADATA[law_id]["law_name"]
+            law_id = clause_data.get("law_id")
+            if law_id:
+                used_law_ids.add(law_id)
+            pos = clause_data.get("position", {})
+            law_name = self._law_name(clause_data)
             article_val = pos.get("article", "")
             article_title = pos.get("article_title", "")
             clause_val = pos.get("clause", "")
@@ -161,12 +197,12 @@ class NestedContextBuilder:
         formatted = []
         for doc in documents:
             c_id = doc.metadata.get("id")
-            data = KNOWLEDGE_BASE.get(c_id, {})
-            if not data:
+            data = self._clause_from_document(doc)
+            if not data.get("content"):
                 continue
 
             pos = data.get("position", {})
-            law_name = LAW_METADATA.get(data.get("law_id"), {}).get("law_name", "")
+            law_name = self._law_name(data)
 
             formatted.append({
                 "content": data.get("content", ""),
