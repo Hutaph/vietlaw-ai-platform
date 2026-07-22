@@ -305,7 +305,7 @@ export default function SystemSettingsTab() {
               min={30}
               max={300}
               step={30}
-              description="Thời gian tối đa chờ API hoặc Ollama sinh câu trả lời."
+              description="Thời gian tối đa chờ dịch vụ AI sinh câu trả lời."
               onChange={value => updateDraft('llmTimeout', value)}
             />
           </section>

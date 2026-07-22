@@ -62,7 +62,6 @@ export const LAW_CATEGORIES = [
 export const AI_PROVIDERS: InferenceProvider[] = [
   { id: 'google', name: 'Google AI Studio', deploymentSupported: true },
   { id: 'huggingface', name: 'HuggingFace Router', deploymentSupported: true },
-  { id: 'ollama', name: 'Ollama', deploymentSupported: false },
 ];
 
 export const AI_MODELS: AIModel[] = [
@@ -70,8 +69,6 @@ export const AI_MODELS: AIModel[] = [
   { id: 'Qwen/Qwen2.5-7B-Instruct', provider: 'huggingface', name: 'Qwen 2.5', fullName: 'Qwen2.5 7B' },
   { id: 'meta-llama/Llama-3.1-8B-Instruct', provider: 'huggingface', name: 'Llama 3.1', fullName: 'Llama 3.1 8B' },
   { id: 'deepseek-ai/DeepSeek-R1-Distill-Llama-8B', provider: 'huggingface', name: 'DeepSeek R1', fullName: 'DeepSeek R1 8B' },
-  { id: 'qwen2.5:7b-instruct', provider: 'ollama', name: 'Qwen Local', fullName: 'Qwen2.5 7B via Ollama' },
-  { id: 'qwen2.5:1.5b', provider: 'ollama', name: 'Qwen Mini Local', fullName: 'Qwen2.5 1.5B via Ollama' },
 ];
 
 // Default answer model.
