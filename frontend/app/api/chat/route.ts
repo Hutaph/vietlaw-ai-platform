@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { AI_MODELS, DEFAULT_MODEL } from '@/lib/constants';
 
 function getBackendUrl(reqUrl: string): string {
   let base = process.env.BACKEND_URL || 'http://localhost:8000';
@@ -9,9 +10,43 @@ function getBackendUrl(reqUrl: string): string {
   return base.replace(/\/+$/, '');
 }
 
+function isSupportedModel(model: unknown): model is string {
+  return typeof model === 'string' && AI_MODELS.some(item => item.id === model);
+}
+
+function normalizeChatBody(body: Record<string, unknown>) {
+  const normalized = { ...body };
+  const selectedModel = isSupportedModel(normalized.model) ? normalized.model : DEFAULT_MODEL;
+  normalized.model = selectedModel;
+
+  const inferenceConfig = normalized.inferenceConfig;
+  if (inferenceConfig && typeof inferenceConfig === 'object' && !Array.isArray(inferenceConfig)) {
+    const nextConfig = { ...(inferenceConfig as Record<string, unknown>) };
+    const roles = nextConfig.roles;
+    if (roles && typeof roles === 'object' && !Array.isArray(roles)) {
+      const nextRoles: Record<string, unknown> = { ...(roles as Record<string, unknown>) };
+      for (const role of ['answer', 'rewriter', 'summarizer']) {
+        const setting = nextRoles[role];
+        if (!setting || typeof setting !== 'object' || Array.isArray(setting)) continue;
+        const nextSetting = { ...(setting as Record<string, unknown>) };
+        if (!isSupportedModel(nextSetting.model)) {
+          nextSetting.provider = 'google';
+          nextSetting.model = DEFAULT_MODEL;
+        }
+        nextRoles[role] = nextSetting;
+      }
+      nextConfig.roles = nextRoles;
+    }
+    normalized.inferenceConfig = nextConfig;
+  }
+
+  return normalized;
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const rawBody = await req.json();
+    const body = normalizeChatBody(rawBody);
     const backendBase = getBackendUrl(req.url);
     const streaming = body.streaming !== false;
     const targetUrl = `${backendBase}${streaming ? '/chat/stream' : '/chat'}`;
