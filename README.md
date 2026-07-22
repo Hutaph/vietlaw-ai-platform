@@ -11,48 +11,47 @@
 ![Qdrant](https://img.shields.io/badge/Vector_DB-Qdrant-DC244C)
 ![RAG](https://img.shields.io/badge/RAG-hybrid_search-blueviolet)
 
-VietLaw AI Platform is a Vietnamese legal question-answering product powered by
-Retrieval-Augmented Generation (RAG). It retrieves Vietnamese legal provisions
-from Qdrant, reranks the best passages, stores document and chat metadata in
-PostgreSQL, and generates Vietnamese answers with cited sources.
+VietLaw AI Platform là sản phẩm hỏi đáp pháp luật Việt Nam ứng dụng
+Retrieval-Augmented Generation (RAG). Hệ thống truy xuất điều khoản pháp luật từ
+Qdrant, rerank các đoạn liên quan nhất, lưu metadata tài liệu và lịch sử chat
+trong PostgreSQL, rồi sinh câu trả lời tiếng Việt kèm nguồn trích dẫn.
 
-> Legal notice: VietLaw AI is an academic and portfolio product. It is not a
-> professional legal advice service. Users should verify official legal texts or
-> consult a qualified professional before making legal decisions.
+> Lưu ý pháp lý: VietLaw AI là sản phẩm học thuật và portfolio, không phải dịch
+> vụ tư vấn pháp lý chuyên nghiệp. Người dùng cần kiểm tra văn bản chính thức
+> hoặc tham khảo chuyên gia trước khi đưa ra quyết định pháp lý.
 
 ![VietLaw AI overview](overview.png)
 
-## Features
+## Tính năng
 
-- Vietnamese-first legal chatbot with cited legal sources.
-- Next.js 15 frontend with chat, document, and admin screens.
-- FastAPI backend with modular RAG services.
-- Qdrant dense/sparse retrieval and PostgreSQL persistence.
-- Local BGE-M3 embedding and cross-encoder reranker support.
-- Manual, resumable corpus ingestion with count verification.
-- Backend-managed inference keys; provider secrets never need to be exposed in
-  the browser.
+- Chatbot pháp luật ưu tiên tiếng Việt, trả lời kèm nguồn trích dẫn.
+- Frontend Next.js 15 với màn hình chat, tài liệu và quản trị.
+- Backend FastAPI với các service RAG được tách module rõ ràng.
+- Truy xuất dense/sparse trên Qdrant và lưu trữ metadata bằng PostgreSQL.
+- Hỗ trợ embedding BGE-M3 và cross-encoder reranker chạy local.
+- Ingest corpus thủ công, có khả năng resume và kiểm tra số lượng bản ghi/vector.
+- Khóa inference được quản lý ở backend, không cần đưa secret ra trình duyệt.
 
-## Stack
+## Công nghệ
 
-| Layer | Technology |
+| Lớp | Công nghệ |
 | --- | --- |
 | Frontend | Next.js 15, React 19, TypeScript, Tailwind CSS |
-| Backend | FastAPI, Python 3.11, LangChain-compatible services |
-| Retrieval | Qdrant hybrid vector search, local FAISS fallback |
+| Backend | FastAPI, Python 3.11, các service tương thích LangChain |
+| Retrieval | Qdrant hybrid vector search, FAISS fallback cho local |
 | Storage | PostgreSQL / Supabase |
-| Models | Local Hugging Face embedding and reranker artifacts, remote LLM providers |
-| Deployment | Vercel frontend, Render/container backend, Docker Compose for local runs |
+| Models | Hugging Face embedding/reranker local, LLM provider từ xa |
+| Deploy | Vercel cho frontend, Render/container host cho backend, Docker Compose local |
 
-## Architecture
+## Kiến trúc
 
 ```text
-User
+Người dùng
   |
   v
 Next.js frontend
-  - Chat UI
-  - Admin and document screens
+  - Giao diện chat
+  - Màn hình tài liệu và quản trị
   - API proxy routes
   |
   v
@@ -64,95 +63,96 @@ FastAPI backend
   - Context building
   - Answer generation
   |
-  +--> PostgreSQL: documents, clauses, chat history
-  +--> Qdrant: dense and sparse vectors
-  +--> Local models or remote inference providers
+  +--> PostgreSQL: tài liệu, điều khoản, lịch sử chat
+  +--> Qdrant: dense và sparse vectors
+  +--> Local models hoặc remote inference providers
 ```
 
-Production is split by design: Vercel serves the frontend, while the FastAPI
-backend runs on a container host such as Render, Railway, Fly.io, Cloud Run, ECS,
-or a VPS. PostgreSQL can run on Supabase and vectors can run on Qdrant Cloud.
+Thiết kế production được tách thành hai phần: Vercel phục vụ frontend, còn
+FastAPI backend chạy trên container host như Render, Railway, Fly.io, Cloud Run,
+ECS hoặc VPS. PostgreSQL có thể dùng Supabase, vector database có thể dùng
+Qdrant Cloud.
 
-## Repository
+## Cấu trúc thư mục
 
 ```text
 .
 ├── backend/             # FastAPI app, RAG services, scripts, tests
 ├── frontend/            # Next.js app, components, API proxy routes
-├── corpus/              # Processed legal corpus mounted for ingestion
-├── docs/                # Technical and evaluation notes
-├── fine-tuning/         # Embedding and reranker training artifacts
-├── models/              # Local model artifacts, ignored from Git
-├── docker-compose.yml   # Local full-stack runtime
-├── render.yaml          # Render backend blueprint
-├── vercel.json          # Vercel frontend build config
-└── .env.example         # Environment template
+├── corpus/              # Corpus pháp luật đã xử lý, dùng khi ingest
+├── docs/                # Ghi chú kỹ thuật và đánh giá
+├── fine-tuning/         # Artifact huấn luyện embedding và reranker
+├── models/              # Model local, không commit lên Git
+├── docker-compose.yml   # Chạy full stack ở local
+├── render.yaml          # Blueprint deploy backend trên Render
+├── vercel.json          # Cấu hình build frontend trên Vercel
+└── .env.example         # Mẫu biến môi trường
 ```
 
-## Requirements
+## Yêu cầu
 
 - Docker Desktop
-- Node.js 20 for native frontend development
-- Python 3.11 for native backend development
-- PostgreSQL or Supabase
-- Qdrant local or Qdrant Cloud
-- Backend provider keys for answer generation
-- Optional NVIDIA GPU for faster local embedding and ingestion
+- Node.js 20 nếu chạy frontend trực tiếp
+- Python 3.11 nếu chạy backend trực tiếp
+- PostgreSQL hoặc Supabase
+- Qdrant local hoặc Qdrant Cloud
+- API key của provider sinh câu trả lời, cấu hình ở backend
+- NVIDIA GPU nếu muốn tăng tốc embedding và ingest ở local
 
-## Environment
+## Cấu hình môi trường
 
-Create a local environment file:
+Tạo file môi trường local:
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-Fill in the deployment values and keep `.env` out of Git.
+Cập nhật các giá trị deploy trong `.env` và không commit file này lên Git.
 
-| Variable | Purpose |
+| Biến | Mục đích |
 | --- | --- |
-| `APP_URL` | Public frontend URL allowed by the backend. |
-| `BACKEND_URL` | Backend URL used by frontend API proxy routes. |
-| `CHAT_STORAGE_MODE` | `postgres` for shared history or `browser` for local browser history. |
-| `STORAGE_BACKEND` | `qdrant_postgres` for production retrieval persistence. |
-| `POSTGRES_DSN` | PostgreSQL connection string. Use `sslmode=require` for Supabase. |
-| `QDRANT_URL` | Qdrant endpoint. |
-| `QDRANT_API_KEY` | Qdrant Cloud API key. Empty for local Qdrant. |
-| `QDRANT_COLLECTION` | Active legal clause collection. |
-| `GOOGLE_API_KEY` | Google AI Studio key for Gemini-compatible answer generation. |
-| `HUGGINGFACE_API_KEY` | Hugging Face token for remote model access. |
-| `HUGGINGFACE_EMBEDDING_MODEL` | Local embedding path or remote model ID. |
-| `RERANKER_MODEL` | Local cross-encoder reranker path. |
-| `EMBEDDING_DEVICE` | `cpu` or `cuda`. |
+| `APP_URL` | URL frontend public được backend cho phép. |
+| `BACKEND_URL` | URL backend mà frontend API proxy sử dụng. |
+| `CHAT_STORAGE_MODE` | `postgres` cho lịch sử dùng chung hoặc `browser` cho lịch sử trong trình duyệt. |
+| `STORAGE_BACKEND` | `qdrant_postgres` cho đường lưu trữ retrieval production. |
+| `POSTGRES_DSN` | Chuỗi kết nối PostgreSQL. Với Supabase nên dùng `sslmode=require`. |
+| `QDRANT_URL` | Endpoint Qdrant. |
+| `QDRANT_API_KEY` | API key Qdrant Cloud. Để trống nếu dùng Qdrant local. |
+| `QDRANT_COLLECTION` | Collection điều khoản pháp luật đang dùng. |
+| `GOOGLE_API_KEY` | Google AI Studio key cho luồng sinh câu trả lời tương thích Gemini. |
+| `HUGGINGFACE_API_KEY` | Hugging Face token cho truy cập model từ xa. |
+| `HUGGINGFACE_EMBEDDING_MODEL` | Đường dẫn embedding local hoặc remote model ID. |
+| `RERANKER_MODEL` | Đường dẫn cross-encoder reranker local. |
+| `EMBEDDING_DEVICE` | `cpu` hoặc `cuda`. |
 
-Typical local Docker model paths:
+Đường dẫn model thường dùng khi chạy Docker local:
 
 ```env
 HUGGINGFACE_EMBEDDING_MODEL=/models/embedding/vietlaw-bge-m3-finetuned/best
 RERANKER_MODEL=/models/reranking/vietlaw-bge-reranker-v2-m3-finetuned/checkpoint-3306
 ```
 
-## Run Locally
+## Chạy local
 
-Start the full stack:
+Khởi động full stack:
 
 ```powershell
 docker compose up --build
 ```
 
-Open:
+Mở ứng dụng:
 
 - Frontend: `http://localhost:3000`
 - Backend: `http://localhost:8000`
 
-Run services separately when needed:
+Chạy từng service khi cần:
 
 ```powershell
 docker compose up backend
 docker compose up frontend
 ```
 
-Run the frontend natively:
+Chạy frontend trực tiếp:
 
 ```powershell
 cd frontend
@@ -160,33 +160,33 @@ npm install
 npm run dev
 ```
 
-For native frontend development, set:
+Khi chạy frontend trực tiếp, đặt:
 
 ```env
 BACKEND_URL=http://localhost:8000
 ```
 
-## Ingest Data
+## Ingest dữ liệu
 
-The backend is configured to avoid automatic ingestion on startup. Load or resume
-the corpus manually:
+Backend không tự ingest khi khởi động. Chạy lệnh sau để nạp hoặc tiếp tục nạp
+corpus:
 
 ```powershell
 docker compose --profile tools run --rm ingest
 ```
 
-The ingestion script reads `corpus/processed/legal-corpus.jsonl`, writes
-documents and clauses to PostgreSQL, embeds missing clauses, upserts vectors to
-Qdrant, and verifies final record/vector counts.
+Script ingest đọc `corpus/processed/legal-corpus.jsonl`, ghi tài liệu và điều
+khoản vào PostgreSQL, embed các điều khoản còn thiếu, upsert vector vào Qdrant
+và kiểm tra số lượng bản ghi/vector cuối cùng.
 
 ## Deploy
 
 ### Frontend: Vercel
 
-Deploy `frontend/` as the Vercel project root. The included `vercel.json`
-matches that layout.
+Deploy thư mục `frontend/` làm project root trên Vercel. File `vercel.json` đã
+được cấu hình theo layout này.
 
-Recommended settings:
+Cấu hình khuyến nghị:
 
 ```text
 Framework preset: Next.js
@@ -196,19 +196,19 @@ Output directory: .next
 Root directory: frontend
 ```
 
-Set only frontend-safe variables on Vercel:
+Chỉ đặt các biến an toàn cho frontend trên Vercel:
 
 ```env
 BACKEND_URL=https://your-backend.example.com
 NEXT_PUBLIC_CHAT_STORAGE_MODE=browser
 ```
 
-### Backend: Render or Container Host
+### Backend: Render hoặc container host
 
-`render.yaml` defines the FastAPI backend as a Docker web service with
-`/health` as the health check path.
+`render.yaml` khai báo backend FastAPI dưới dạng Docker web service, dùng
+`/health` làm health check path.
 
-Required backend variables:
+Các biến backend cần có:
 
 ```env
 APP_URL=https://your-vercel-app.vercel.app
@@ -223,10 +223,10 @@ DISABLE_AUTO_INGEST=true
 ENABLE_FAISS_FALLBACK=false
 ```
 
-Keep PostgreSQL, Qdrant, Google, Hugging Face, and OpenAI secrets on the backend
-host only.
+Giữ secret của PostgreSQL, Qdrant, Google, Hugging Face và OpenAI ở backend
+host; không đưa các giá trị này vào biến public phía frontend.
 
-## Validate
+## Kiểm tra
 
 Frontend:
 
@@ -248,6 +248,6 @@ Ingestion:
 docker compose --profile tools run --rm ingest
 ```
 
-Before sharing a deployment, confirm the frontend can reach `BACKEND_URL`, the
-backend health check passes, and PostgreSQL/Qdrant counts match the processed
-corpus.
+Trước khi chia sẻ bản deploy, hãy kiểm tra frontend gọi được `BACKEND_URL`,
+backend health check thành công, và số lượng bản ghi trong PostgreSQL/Qdrant
+khớp với corpus đã xử lý.
