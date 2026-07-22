@@ -10,6 +10,8 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-supported-4169E1?logo=postgresql&logoColor=white)
 ![Qdrant](https://img.shields.io/badge/Vector_DB-Qdrant-DC244C)
 ![RAG](https://img.shields.io/badge/RAG-hybrid_search-blueviolet)
+![Corpus](https://img.shields.io/badge/Corpus-52_law_texts-2E7D32)
+![Structured Nodes](https://img.shields.io/badge/Data-52k_structured_nodes-1565C0)
 
 VietLaw AI Platform là sản phẩm hỏi đáp pháp luật Việt Nam ứng dụng
 Retrieval-Augmented Generation (RAG). Hệ thống truy xuất điều khoản pháp luật từ
@@ -31,6 +33,76 @@ trong PostgreSQL, rồi sinh câu trả lời tiếng Việt kèm nguồn trích
 - Hỗ trợ embedding BGE-M3 và cross-encoder reranker chạy local.
 - Ingest corpus thủ công, có khả năng resume và kiểm tra số lượng bản ghi/vector.
 - Khóa inference được quản lý ở backend, không cần đưa secret ra trình duyệt.
+
+## Dữ liệu
+
+Corpus hiện tại là snapshot `g2-structured-corpus-20260713`, được parse từ các
+văn bản pháp luật tiếng Việt lưu trong `corpus/raw/` và chuẩn hóa thành JSONL ở
+`corpus/processed/legal-corpus.jsonl`.
+
+| Hạng mục | Quy mô |
+| --- | ---: |
+| Văn bản nguồn | 52 |
+| Structured nodes | 52.105 |
+| Dung lượng JSONL đã xử lý | 93,37 MB |
+| Quarantine records | 0 |
+
+Phân bố node theo cấp pháp lý:
+
+| Cấp | Số lượng |
+| --- | ---: |
+| `document` | 52 |
+| `part` | 45 |
+| `chapter` | 607 |
+| `section` | 530 |
+| `subsection` | 27 |
+| `article` | 7.966 |
+| `clause` | 24.571 |
+| `point` | 18.307 |
+
+Cấu trúc dữ liệu giữ lại quan hệ phân cấp của văn bản luật:
+
+```text
+document
+  -> part
+    -> chapter
+      -> section/subsection
+        -> article
+          -> clause
+            -> point
+```
+
+Mỗi dòng trong `legal-corpus.jsonl` là một node độc lập, có đủ thông tin để truy
+vết nguồn, dựng citation và tái tạo quan hệ cha-con:
+
+```json
+{
+  "law_id": "BLDS_2015",
+  "level": "clause",
+  "node_id": "BLDS_2015:article-1:clause-1",
+  "parent_id": "BLDS_2015:article-1",
+  "title": "Phạm vi điều chỉnh",
+  "number": "1",
+  "text": "...",
+  "citation_label": "Khoản 1 Điều 1, Bộ luật Dân sự 2015",
+  "source_url": "https://thuvienphapluat.vn/...",
+  "hierarchy": {
+    "part": "thứ nhất",
+    "chapter": "I",
+    "article": "1",
+    "clause": "1",
+    "point": null
+  },
+  "text_hash": "...",
+  "schema_version": "1.0"
+}
+```
+
+Trong pipeline retrieval, các node cấp `article`, `clause` và `point` là đơn vị
+chính để embedding và truy xuất. PostgreSQL lưu metadata, nội dung văn bản và
+quan hệ phân cấp; Qdrant lưu dense/sparse vectors để tìm kiếm hybrid. Khi trả
+lời, backend lấy các node liên quan, rerank, dựng context theo hierarchy và hiển
+thị citation từ `citation_label`/`source_url`.
 
 ## Công nghệ
 
