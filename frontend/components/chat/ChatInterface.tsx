@@ -297,7 +297,9 @@ export function ChatInterface() {
       });
 
       if (!response.ok || !response.body) {
-        throw new Error('Phản hồi từ máy chủ không khả dụng');
+        const errorPayload = await response.json().catch(() => null);
+        const detail = errorPayload?.details || errorPayload?.error;
+        throw new Error(detail || 'Phản hồi từ máy chủ không khả dụng');
       }
 
       if (!aiSettings.streaming) {
@@ -410,7 +412,10 @@ export function ChatInterface() {
         }
       } else {
         setProcessingStage('error');
-        const content = contextUsed.length > 0
+        const errorMessage = error instanceof Error ? error.message : '';
+        const content = errorMessage
+          ? `Không thể hoàn tất câu trả lời: ${errorMessage}`
+          : contextUsed.length > 0
           ? 'Đã tìm thấy căn cứ pháp lý nhưng chưa thể tổng hợp câu trả lời. Bạn vẫn có thể xem các căn cứ bên dưới.'
           : 'Không thể hoàn tất câu trả lời lúc này. Vui lòng thử lại.';
         addMessage({

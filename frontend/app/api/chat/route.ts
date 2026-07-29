@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AI_MODELS, DEFAULT_MODEL } from '@/lib/constants';
 
+const BACKEND_TIMEOUT_MS = 25_000;
+
 function getBackendUrl(reqUrl: string): string {
   let base = process.env.BACKEND_URL || 'http://localhost:8000';
   if (base.startsWith('/')) {
@@ -43,6 +45,31 @@ function normalizeChatBody(body: Record<string, unknown>) {
   return normalized;
 }
 
+function timeoutSignal(requestSignal: AbortSignal): AbortSignal {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => {
+    controller.abort(new DOMException('Backend request timed out', 'TimeoutError'));
+  }, BACKEND_TIMEOUT_MS);
+
+  if (requestSignal.aborted) {
+    clearTimeout(timeout);
+    controller.abort(requestSignal.reason);
+    return controller.signal;
+  }
+
+  requestSignal.addEventListener(
+    'abort',
+    () => {
+      clearTimeout(timeout);
+      controller.abort(requestSignal.reason);
+    },
+    { once: true },
+  );
+
+  controller.signal.addEventListener('abort', () => clearTimeout(timeout), { once: true });
+  return controller.signal;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const rawBody = await req.json();
@@ -55,7 +82,7 @@ export async function POST(req: NextRequest) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
-      signal: req.signal,
+      signal: timeoutSignal(req.signal),
     });
 
     if (!backendRes.ok) {
@@ -85,9 +112,10 @@ export async function POST(req: NextRequest) {
   } catch (error: unknown) {
     const details = error instanceof Error ? error.message : 'Unknown proxy error';
     console.error('[Proxy Chat Error]', error);
+    const isTimeout = error instanceof DOMException && error.name === 'TimeoutError';
     return NextResponse.json(
-      { error: 'Backend connection error', details },
-      { status: 502 },
+      { error: isTimeout ? 'Backend timeout' : 'Backend connection error', details },
+      { status: isTimeout ? 504 : 502 },
     );
   }
 }
