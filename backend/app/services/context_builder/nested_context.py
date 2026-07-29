@@ -14,6 +14,8 @@ from app.utils.logging import setup_logger
 
 logger = setup_logger("vietlaw.context_builder.nested")
 
+FRONTEND_SOURCE_MAX_CHARS = 5000
+
 
 class NestedContextBuilder:
     """Build two-level context with legal cross-reference resolution.
@@ -62,6 +64,71 @@ class NestedContextBuilder:
         law_id = clause_data.get("law_id")
         law_meta = LAW_METADATA.get(law_id, {}) if law_id else {}
         return law_meta.get("law_name") or clause_data.get("_fallback_law_name") or law_id or "Văn bản pháp luật"
+
+    def _article_clauses(self, clause_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Return all in-memory chunks that belong to the same legal article."""
+        law_id = clause_data.get("law_id")
+        position = clause_data.get("position", {})
+        article = position.get("article") if isinstance(position, dict) else None
+        if not law_id or article in (None, ""):
+            return [clause_data]
+
+        matches = []
+        for candidate in KNOWLEDGE_BASE.values():
+            candidate_pos = candidate.get("position", {})
+            if not isinstance(candidate_pos, dict):
+                continue
+            if candidate.get("law_id") == law_id and candidate_pos.get("article") == article:
+                matches.append(candidate)
+
+        if not matches:
+            return [clause_data]
+
+        def sort_order(value: Any) -> int:
+            try:
+                return int(value or 0)
+            except (TypeError, ValueError):
+                return 0
+
+        def sort_key(candidate: Dict[str, Any]) -> tuple:
+            pos = candidate.get("position", {})
+            return (
+                sort_order(pos.get("order_index")),
+                str(pos.get("clause") or ""),
+                str(pos.get("point") or ""),
+                str(candidate.get("content") or ""),
+            )
+
+        return sorted(matches, key=sort_key)
+
+    def _format_frontend_content(self, clause_data: Dict[str, Any]) -> str:
+        """Build reader-friendly source text with enough surrounding article context."""
+        article_clauses = self._article_clauses(clause_data)
+        if len(article_clauses) <= 1:
+            return clause_data.get("content", "")
+
+        pos = clause_data.get("position", {})
+        article = pos.get("article", "")
+        article_title = pos.get("article_title", "")
+        heading = f"Điều {article}. {article_title}".strip()
+        if not article:
+            heading = article_title or "Nội dung điều luật"
+
+        lines = [heading]
+        seen = set()
+        for item in article_clauses:
+            content = str(item.get("content") or "").strip()
+            if not content or content in seen:
+                continue
+            seen.add(content)
+            if content == heading or content.startswith(f"{heading}\n"):
+                continue
+            lines.append(content)
+
+        expanded = "\n\n".join(lines).strip()
+        if len(expanded) <= FRONTEND_SOURCE_MAX_CHARS:
+            return expanded
+        return f"{expanded[:FRONTEND_SOURCE_MAX_CHARS].rstrip()}..."
 
     def build(self, documents: List[Document]) -> str:
         """Build a two-level recursive legal context string."""
@@ -205,12 +272,14 @@ class NestedContextBuilder:
             law_name = self._law_name(data)
 
             formatted.append({
-                "content": data.get("content", ""),
+                "content": self._format_frontend_content(data),
                 "metadata": {
                     "id": c_id,
                     "source": law_name,
                     "dieu": pos.get("article"),
                     "khoan": pos.get("clause"),
+                    "title": pos.get("article_title"),
+                    "expanded": True,
                     "law": law_name
                 }
             })
