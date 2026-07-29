@@ -45,7 +45,7 @@ function normalizeChatBody(body: Record<string, unknown>) {
   return normalized;
 }
 
-function timeoutSignal(requestSignal: AbortSignal): AbortSignal {
+async function fetchBackend(input: string, init: RequestInit, requestSignal: AbortSignal) {
   const controller = new AbortController();
   const timeout = setTimeout(() => {
     controller.abort(new DOMException('Backend request timed out', 'TimeoutError'));
@@ -54,7 +54,6 @@ function timeoutSignal(requestSignal: AbortSignal): AbortSignal {
   if (requestSignal.aborted) {
     clearTimeout(timeout);
     controller.abort(requestSignal.reason);
-    return controller.signal;
   }
 
   requestSignal.addEventListener(
@@ -66,8 +65,11 @@ function timeoutSignal(requestSignal: AbortSignal): AbortSignal {
     { once: true },
   );
 
-  controller.signal.addEventListener('abort', () => clearTimeout(timeout), { once: true });
-  return controller.signal;
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -78,12 +80,11 @@ export async function POST(req: NextRequest) {
     const streaming = body.streaming !== false;
     const targetUrl = `${backendBase}${streaming ? '/chat/stream' : '/chat'}`;
 
-    const backendRes = await fetch(targetUrl, {
+    const backendRes = await fetchBackend(targetUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
-      signal: timeoutSignal(req.signal),
-    });
+    }, req.signal);
 
     if (!backendRes.ok) {
       const err = await backendRes.json().catch(() => ({}));
